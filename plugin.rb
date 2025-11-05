@@ -12,11 +12,13 @@ after_initialize do
   end
 
   require_dependency 'application_controller'
-
+  
+  
+  load File.expand_path('../lib/invite_manager/engine.rb', __FILE__)
   load File.expand_path('../app/controllers/invite_manager_controller.rb', __FILE__)
   load File.expand_path('../app/models/invite_metadata.rb', __FILE__)
   load File.expand_path('../app/jobs/check_invite_expiration.rb', __FILE__)
-  load File.expand_path('../lib/invite_manager/engine.rb', __FILE__)
+
 
   # Extend Invite model to support metadata
   ::Invite.class_eval do
@@ -42,4 +44,3 @@ after_initialize do
     end
   end
 end
-
