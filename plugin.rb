@@ -2,7 +2,7 @@
 # about: Technogiq:- Adds expiration and dynamic metadata to Discourse invitation links
 # version: 0.1
 # authors: Sachin Sonone
-# url: https://github.com/sachinsonone/technogiq-discourse-invite-manager
+# url: https://github.com/sachinsonone999326/technogiq-discourse-invite-manager
 
 enabled_site_setting :invite_manager_enabled
 
