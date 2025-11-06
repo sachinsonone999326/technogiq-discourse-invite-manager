@@ -7,7 +7,7 @@
 enabled_site_setting :invite_manager_enabled
 
 after_initialize do
-  module ::DiscourseInviteManager
+  module ::TechnogiqDiscourseInviteManager
     PLUGIN_NAME = 'technogiq-discourse-invite-manager'
   end
 
