@@ -15,7 +15,7 @@ after_initialize do
   
   
   load File.expand_path('../lib/invite_manager/engine.rb', __FILE__)
-  load File.expand_path('../app/controllers/invite_manager_controller.rb', __FILE__)
+  #load File.expand_path('../app/controllers/invite_manager_controller.rb', __FILE__)
   load File.expand_path('../app/models/invite_metadata.rb', __FILE__)
   #load File.expand_path('../app/jobs/check_invite_expiration.rb', __FILE__)
 
