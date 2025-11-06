@@ -1,27 +1,34 @@
+# frozen_string_literal: true
+
 # name: technogiq-discourse-invite-manager
-# about: Technogiq:- Adds expiration and dynamic metadata to Discourse invitation links
+# about: Technogiq – Adds expiration and dynamic metadata to Discourse invitation links
 # version: 0.1
 # authors: Sachin Sonone
-# url: https://github.com/sachinsonone999326/technogiq-discourse-invite-manager
+# url: https://github.com/sachinsonone/technogiq-discourse-invite-manager
 
 enabled_site_setting :invite_manager_enabled
 
+module ::TechnogiqDiscourseInviteManager
+  PLUGIN_NAME = "technogiq-discourse-invite-manager"
+end
+
+require_relative "lib/invite_manager/engine"
+
 after_initialize do
-  module ::TechnogiqDiscourseInviteManager
-    PLUGIN_NAME = 'technogiq-discourse-invite-manager'
-  end
+  require_dependency "application_controller"
+  require_dependency "invite"
 
-  require_dependency 'application_controller'
-  
-  
-  load File.expand_path('../lib/invite_manager/engine.rb', __FILE__)
-  load File.expand_path('../app/controllers/invite_manager_controller.rb', __FILE__)
-  load File.expand_path('../app/models/invite_metadata.rb', __FILE__)
-  
+  # Load plugin components
+  require_relative "app/controllers/invite_manager_controller"
+  require_relative "app/models/invite_metadata"
+  # ⚠️ Do not manually load jobs if located in app/jobs/scheduled/
+  # Discourse autoloads them automatically.
+  # Example correct location: app/jobs/scheduled/check_invite_expiration.rb
 
-
-  # Extend Invite model to support metadata
-  ::Invite.class_eval do
+  #
+  # --- Extend the Invite model to support metadata ---
+  #
+  class ::Invite
     has_many :invite_metadata, dependent: :destroy
 
     def set_metadata(key, value)
@@ -36,11 +43,13 @@ after_initialize do
     end
   end
 
-  # Hook: When a new user is created, link to invite and add username
+  #
+  # --- Add username metadata automatically when user registers ---
+  #
   DiscourseEvent.on(:user_created) do |user|
     invite = Invite.find_by(email: user.email)
-    if invite
-      invite.set_metadata("username", user.username)
-    end
+    next unless invite
+
+    invite.set_metadata("username", user.username)
   end
 end
