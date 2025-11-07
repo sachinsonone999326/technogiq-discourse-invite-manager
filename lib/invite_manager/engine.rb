@@ -1,15 +1,12 @@
-module ::InviteManager
+module TechnogiqDiscourseInviteManager
   class Engine < ::Rails::Engine
-    engine_name 'invite_manager'
-    isolate_namespace InviteManager
+    engine_name "technogiq_discourse_invite_manager"
+    isolate_namespace TechnogiqDiscourseInviteManager
+
+    config.after_initialize do
+      Discourse::Application.routes.append do
+        mount ::TechnogiqDiscourseInviteManager::Engine, at: "/invite_manager"
+      end
+    end
   end
 end
-
-Discourse::Application.routes.append do
-  mount ::InviteManager::Engine, at: '/invite_manager'
-end
-
-InviteManager::Engine.routes.draw do
-  post '/create' => 'invite_manager#create'
-end
-
