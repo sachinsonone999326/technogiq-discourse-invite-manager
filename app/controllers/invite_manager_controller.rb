@@ -1,4 +1,4 @@
-class ::InviteManager::InviteManagerController < ::ApplicationController
+class ::InviteManagerController < ::ApplicationController
   requires_plugin 'technogiq-discourse-invite-manager'
 
   before_action :ensure_logged_in
@@ -10,22 +10,16 @@ class ::InviteManager::InviteManagerController < ::ApplicationController
     metadata = params[:metadata] || {}
 
     invite = Invite.create_invite_link(invited_by: current_user, email: email)
-
     invite.set_metadata('expiration_date', expiration_date) if expiration_date.present?
-    metadata.each do |k, v|
-      invite.set_metadata(k, v)
-    end
-
-    invite_url = "#{Discourse.base_url}/invites/#{invite.invite_key}"
+    metadata.each { |k, v| invite.set_metadata(k, v) }
 
     render json: {
       status: "ok",
       invite_id: invite.id,
-      invite_url: invite_url,
+      invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}",
       metadata: invite.invite_metadata.pluck(:key, :value).to_h
     }
   rescue => e
     render json: { status: "error", message: e.message }, status: 500
   end
 end
-
