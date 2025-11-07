@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ::InviteManagerController < ::ApplicationController
+class TechnogiqDiscourseInviteManager::InviteManagerController < ::ApplicationController
   requires_plugin 'technogiq-discourse-invite-manager'
 
   before_action :ensure_logged_in
