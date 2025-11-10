@@ -39,4 +39,5 @@ after_initialize do
       record = invite_metadata.find_by(key: key)
       record&.value
     end
+  end
 end
