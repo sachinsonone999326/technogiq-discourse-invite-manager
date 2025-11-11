@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-MyPluginModule::Engine.routes.draw do
+TechnogiqDiscourseModule::Engine.routes.draw do
   post "/invites" => "invites#create"
   # define routes here
 end
 
-Discourse::Application.routes.draw { mount ::MyPluginModule::Engine, at: "my-plugin" }
+Discourse::Application.routes.draw { mount ::TechnogiqDiscourseModule::Engine, at: "my-plugin" }
