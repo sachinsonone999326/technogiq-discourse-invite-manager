@@ -5,7 +5,7 @@
 # meta_topic_id: TODO
 # version: 0.0.1
 # authors: Technogiq
-# url: https://github.com/sachinsonone/technogiq-discourse-invite-manager
+# url: https://github.com/sachinsonone999326/technogiq-discourse-invite-manager/
 
 enabled_site_setting :invite_manager_enabled
 
