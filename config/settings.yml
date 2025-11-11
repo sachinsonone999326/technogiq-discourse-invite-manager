@@ -1,4 +1,4 @@
-TODO_plugin_name:
+TODO_invite_manager:
   invite_manager_enabled:
     default: false
     client: true
