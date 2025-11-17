@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 #
 
@@ -83,7 +82,8 @@ module Jobs
 
       PostCreator.create!(
         Discourse.system_user,
-        target_user: user,
+        #target_user: user,
+        target_usernames: user.username,
         archetype: Archetype.private_message,
         subtype: TopicSubtype.system_message,
         title: "Your account will expire soon",
