@@ -1,0 +1,28 @@
+<div class="invite-manager">
+  <h1>Invite Manager</h1>
+
+  <label>Email</label>
+  <Input @value={{this.model.email}} />
+
+  <label>Expiration Date</label>
+  <Input @value={{this.model.expiration_date}} />
+
+  <h2>Metadata</h2>
+
+  {{#each this.model.metadata as |pair index|}}
+    <div class="metadata-pair">
+      <Input @value={{pair.key}} placeholder="Key" />
+      <Input @value={{pair.value}} placeholder="Value" />
+      <button {{on "click" (fn this.removeMetadata index)}}>Remove</button>
+    </div>
+  {{/each}}
+
+  <button {{on "click" this.addMetadata}}>Add metadata</button>
+
+  <button {{on "click" this.generateInvite}}>Generate Invite</button>
+
+  {{#if this.responseMessage}}
+    <div class="response">{{this.responseMessage}}</div>
+  {{/if}}
+</div>
+
