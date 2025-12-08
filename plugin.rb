@@ -16,8 +16,16 @@ end
 require_relative "lib/technogiq_discourse_module/engine"
 require_relative "app/models/invite_metadata"
 
+#add_admin_route 'invite_manager.title', 'invite-manager'
+
+#register_asset 'admin/addon/routes/invite-manager.js', :admin
+#register_asset 'admin/addon/controllers/invite-manager.js', :admin
+#register_asset 'admin/addon/templates/invite-manager.hbs', :admin
+
+
 after_initialize do
   require_dependency "invite"
+  #add_admin_route 'invite_manager.title', 'invite-manager'
   #require_dependency "invite_sender"
   class ::Invite
     has_many :invite_metadata, dependent: :destroy, class_name: "InviteMetadatum", foreign_key: "invite_id"
@@ -33,6 +41,14 @@ after_initialize do
       record&.value
     end
   end
+
+  add_admin_route "technogiq-discourse-invite-manager.title", "technogiq-discourse-invite-manager"
+  Discourse::Application.routes.append do
+    get '/admin/plugins/technogiq-discourse-invite-manager' => 'admin/plugins#index', constraints: StaffConstraint.new
+  end
+ # register_asset "javascripts/discourse/routes/admin-invite-manager.js"
+ # register_asset "javascripts/discourse/controllers/admin-invite-manager.js"
+ # register_asset "javascripts/discourse/templates/admin-invite-manager.hbs"
   # Code which should run after Rails has finished booting
   #Discourse::Application.routes.append do
     #mount ::TechnogiqDiscourseModule::Engine, at: "/technogiq-discourse-invite-manager"
