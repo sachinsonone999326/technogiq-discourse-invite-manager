@@ -3,7 +3,10 @@ en:
     admin:
       site_settings:
         categories:
-          TODO_plugin_name: "Plugin Name"
+          TODO_plugin_name: "Technogiq discourse invite manager"
+          #TODO_invite_manager: "Technogiq discourse invite manager"
   js:
     discourse_plugin_name:
       placeholder: placeholder
+    technogiq-discourse-invite-manager:
+      title: "Invite Manager"
