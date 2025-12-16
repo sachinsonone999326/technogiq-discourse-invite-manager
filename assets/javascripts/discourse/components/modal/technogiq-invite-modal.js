@@ -7,12 +7,12 @@ export default class TechnogiqInviteModal extends Component {
 
   @action
   createInvite() {
-    ajax("/admin/technogiq/invites", {
+    ajax("/technogiq/invites", {
       type: "POST",
       data: { email: this.email },
     }).then((response) => {
       this.args.model.toolbarEvent.addText(
-        `Invite link: ${response.invite_link}`
+        `Invite link: ${response.invite_url}`
       );
       this.args.closeModal();
     });
