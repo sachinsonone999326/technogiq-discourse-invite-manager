@@ -1,5 +1,5 @@
 <div class="modal-body">
-  <h2>Create Invite</h2>
+  <h2>{{i18n "technogiq_invites.modal_title"}}</h2>
 
   <Input
     @value={{this.email}}
@@ -9,8 +9,7 @@
 
   <div class="modal-footer">
     <button class="btn btn-primary" {{on "click" this.createInvite}}>
-      Create Invite
+      {{i18n "technogiq_invites.create"}}
     </button>
   </div>
 </div>
-
