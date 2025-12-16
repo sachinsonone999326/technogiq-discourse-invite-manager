@@ -1,4 +1,4 @@
 TODO_invite_manager:
   invite_manager_enabled:
-    default: false
+    default: true
     client: true
