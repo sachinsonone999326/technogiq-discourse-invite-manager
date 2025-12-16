@@ -16,3 +16,5 @@ en:
     add: "Create Invite"
     create: "Create"
     modal_title: "Create Invite"
+  technogiq_invite_manager:
+    title: "Invite Manager"
