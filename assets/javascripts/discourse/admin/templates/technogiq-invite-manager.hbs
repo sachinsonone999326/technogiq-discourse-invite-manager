@@ -1,0 +1,25 @@
+<section class="admin-technogiq-invite-manager">
+  <h2>Create Invite</h2>
+
+  <label>Email</label>
+  <Input @value={{this.email}} class="input-large" />
+
+  <label>Expiration Date</label>
+  <Input @type="date" @value={{this.expiration_date}} />
+
+  <label>Metadata (JSON)</label>
+  <Textarea @value={{this.metadataJson}} rows="5" />
+
+  <DButton
+    @label="Create Invite"
+    @action={{this.createInvite}}
+    class="btn-primary"
+  />
+
+  {{#if this.inviteUrl}}
+    <p class="success">
+      Invite created:
+      <a href={{this.inviteUrl}} target="_blank">{{this.inviteUrl}}</a>
+    </p>
+  {{/if}}
+</section>
