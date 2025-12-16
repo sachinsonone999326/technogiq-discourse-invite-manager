@@ -1,8 +1,4 @@
-import Route from "@ember/routing/route";
+// assets/javascripts/discourse/admin/routes/technogiq-invites.js
+import AdminRoute from "discourse/routes/admin";
 
-export default class TechnogiqInvitesRoute extends Route {
-  model() {
-    return this.store.findAll("technogiq-invite");
-  }
-}
-
+export default class TechnogiqInvitesRoute extends AdminRoute {}
