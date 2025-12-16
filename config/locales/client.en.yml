@@ -10,6 +10,8 @@ en:
       placeholder: placeholder
     technogiq-discourse-invite-manager:
       title: "Invite Manager"
+    technogiq_invite_manager:
+      create: "Create Invite"
   technogiq_invites:
     add: "Create Invite"
     create: "Create"
