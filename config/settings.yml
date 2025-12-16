@@ -2,3 +2,7 @@ TODO_invite_manager:
   invite_manager_enabled:
     default: true
     client: true
+plugins:
+  invite_manager_enabled:
+    default: true
+    client: true
