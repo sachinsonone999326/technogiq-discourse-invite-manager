@@ -10,9 +10,11 @@ export default class TechnogiqInviteModal extends Component {
     ajax("/admin/technogiq/invites", {
       type: "POST",
       data: { email: this.email },
-    }).then(() => {
+    }).then((response) => {
+      this.args.model.toolbarEvent.addText(
+        `Invite link: ${response.invite_link}`
+      );
       this.args.closeModal();
     });
   }
 }
-
