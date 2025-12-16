@@ -1,6 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import InviteModal from "../components/modal/technogiq-invite-modal";
-import richEditorExtension from "../lib/rich-editor-extension";
 
 function initializeTechnogiqInviteManager(api) {
   api.addComposerToolbarPopupMenuOption({
@@ -24,8 +23,6 @@ function initializeTechnogiqInviteManager(api) {
       );
     },
   });
-
-  api.registerRichEditorExtension(richEditorExtension);
 }
 
 export default {
