@@ -1,20 +1,34 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { i18n } from "discourse-i18n";
+import InviteModal from "../components/modal/technogiq-invite-modal";
+
+function initializeTechnogiqInviteManager(api) {
+  api.addComposerToolbarPopupMenuOption({
+    icon: "user-plus",
+    label: "technogiq_invites.add",
+
+    action: (toolbarEvent) => {
+      api.container.lookup("service:modal").show(InviteModal, {
+        model: { toolbarEvent },
+      });
+    },
+
+    condition: (composer) => {
+      const currentUser = api.getCurrentUser();
+      const siteSettings = api.container.lookup("service:site-settings");
+
+      return (
+        siteSettings.technogiq_invite_manager_enabled &&
+        currentUser &&
+        currentUser.staff
+      );
+    },
+  });
+}
 
 export default {
   name: "technogiq-invite-manager",
 
   initialize() {
-    withPluginApi((api) => {
-      /**
-       * Register admin page (sidebar + route binding)
-       * This is the ONLY supported way now
-       */
-      api.addAdminPage({
-        name: "technogiq-invites",
-        label: i18n("technogiq_invites.title"),
-        route: "technogiq-invites",
-      });
-    });
+    withPluginApi(initializeTechnogiqInviteManager);
   },
 };
