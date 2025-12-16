@@ -1,0 +1,36 @@
+<section class="technogiq-invites">
+  <h1>Technogiq Invite Manager</h1>
+
+  <div class="invite-form">
+    <Input
+      @value={{this.email}}
+      placeholder="Enter email"
+      class="input-large"
+    />
+    <button class="btn btn-primary" {{on "click" this.createInvite}}>
+      Create Invite
+    </button>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Invite Key</th>
+        <th>Created</th>
+        <th>Redeemed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.model as |invite|}}
+        <tr>
+          <td>{{invite.email}}</td>
+          <td>{{invite.invite_key}}</td>
+          <td>{{invite.created_at}}</td>
+          <td>{{invite.redeemed_at}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+
