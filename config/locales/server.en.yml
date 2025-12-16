@@ -1,4 +1,6 @@
 en:
   technogiq_invites:
     title: "Technogiq Invite Manager"
+  site_settings:
+    technogiq_invite_manager_enabled: "Enable Technogiq Invite Manager"
 
