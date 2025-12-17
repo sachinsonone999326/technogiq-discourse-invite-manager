@@ -1,1 +1,5 @@
-<h1>Invite Manager Ember Loaded</h1>
+export default <template>
+  <div class="admin-detail">
+    Invite Manager works5555
+  </div>
+</template>;
