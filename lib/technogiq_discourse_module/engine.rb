@@ -26,5 +26,17 @@ module ::TechnogiqDiscourseModule
         Rails.autoloaders.main.eager_load_dir(scheduled_job_dir)
       end
     end
+
+    # Engine routes
+    initializer "technogiq_discourse_module.routes" do
+      TechnogiqDiscourseModule::Engine.routes.draw do
+        get "/admin/plugins/technogiq-discourse-invite-manager" =>
+          "invite_manager#index"
+
+        post "/admin/plugins/technogiq-discourse-invite-manager" =>
+          "invite_manager#create"
+      end
+    end
+
   end
 end
