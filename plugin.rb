@@ -43,18 +43,18 @@ after_initialize do
   end
 
   #add_admin_route "technogiq-discourse-invite-manager.title", "technogiq-discourse-invite-manager"
-  add_admin_route "technogiq_invite_manager.title", "technogiq-invite-manager", use_new_show_route: true
+  add_admin_route "technogiq_invite_manager.title", "technogiq-discourse-invite-manager", use_new_show_route: true
   Discourse::Application.routes.append do
-    get "/admin/plugins/technogiq-invite-manager" => "technogiq_discourse_module/invite_manager#index",
+    get "/admin/plugins/technogiq-discourse-invite-manager" => "technogiq_discourse_module/invite_manager#index",
         :constraints => StaffConstraint.new
     #get '/admin/plugins/technogiq-discourse-invite-manager' => 'admin/plugins#index', constraints: StaffConstraint.new
     #get '/admin/plugins/technogiq-invite-manager' => 'admin/plugins#index'
     namespace :admin do
-      get  "/technogiq-invite-manager" =>
-        "technogiq_discourse_module/invite_manager#index"
+      #get  "/technogiq-invite-manager" =>
+       # "technogiq_discourse_module/invite_manager#index"
 
-      post "/technogiq-invite-manager" =>
-        "technogiq_discourse_module/invite_manager#create"
+      #post "/technogiq-invite-manager" =>
+      #  "technogiq_discourse_module/invite_manager#create"
     end
   end
  # register_asset "javascripts/discourse/routes/admin-invite-manager.js"
