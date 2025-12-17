@@ -1,7 +1,7 @@
 <template>
-  <h2>Invite Manager</h2>
+  <h2>Invite Manager1</h2>
 
   
-    Create Invite
+   
   
 </template>
