@@ -1,3 +1,3 @@
 <template>
-  <TechnogiqInviteManagerForm />
+  admin form
 </template>
