@@ -1,3 +1,5 @@
-<template>
-  <h1>New Invite</h1>
+export default <template>
+  <div class="admin-detail discourse-chat-incoming-webhooks">
+    invite manager11
+  </div>
 </template>
