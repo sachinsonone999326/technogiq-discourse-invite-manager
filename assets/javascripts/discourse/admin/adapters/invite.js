@@ -16,6 +16,6 @@ export default class Adapter extends RestAdapter {
   }
 
   apiNameFor() {
-    return "invite;
+    return "invite";
   }
 }
