@@ -12,22 +12,22 @@ export default <template>
 
   <div class="control-group">
     <label>Expiration Date</label>
-    <input @value={{this.expirationDate}} @type="date" />
+    <input value={{this.expirationDate}} type="date" />
   </div>
 
   <div class="control-group">
     <label>Plan</label>
-    <input @value={{this.plan}} />
+    <input value={{this.plan}} />
   </div>
 
   <div class="control-group">
     <label>Source</label>
-    <input @value={{this.source}} />
+    <input value={{this.source}} />
   </div>
 
   <div class="control-group">
     <label>Campaign</label>
-    <input @value={{this.campaign}} />
+    <input value={{this.campaign}} />
   </div>
 
   <button class="btn btn-primary" type="submit" disabled={{this.isSaving}}>
