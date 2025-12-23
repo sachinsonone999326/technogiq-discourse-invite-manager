@@ -7,27 +7,27 @@ export default <template>
      <form {{on "submit" (prevent-default this.submitInvite)}} class="invite-form">
   <div class="control-group">
     <label>Email</label>
-    <Input @value={{this.email}} @type="email" required />
+    <input @value={{this.email}} @type="email" required />
   </div>
 
   <div class="control-group">
     <label>Expiration Date</label>
-    <Input @value={{this.expirationDate}} @type="date" />
+    <input @value={{this.expirationDate}} @type="date" />
   </div>
 
   <div class="control-group">
     <label>Plan</label>
-    <Input @value={{this.plan}} />
+    <input @value={{this.plan}} />
   </div>
 
   <div class="control-group">
     <label>Source</label>
-    <Input @value={{this.source}} />
+    <input @value={{this.source}} />
   </div>
 
   <div class="control-group">
     <label>Campaign</label>
-    <Input @value={{this.campaign}} />
+    <input @value={{this.campaign}} />
   </div>
 
   <button class="btn btn-primary" type="submit" disabled={{this.isSaving}}>
