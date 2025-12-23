@@ -7,7 +7,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 export default class InviteManagerEditor extends Component {
   @tracked isSaving = false;
 
-  // Initial form state
   initialData = {
     email: "",
     expiration_date: "",
@@ -16,21 +15,30 @@ export default class InviteManagerEditor extends Component {
 
   @action
   addMetadata(form, data) {
-    form.set(
-      "metadata",
-      [...(data.metadata || []), { key: "", value: "" }]
-    );
+    form.set("metadata", [...data.metadata, { key: "", value: "" }]);
   }
 
   @action
   removeMetadata(form, data, index) {
-    const updated = data.metadata.filter((_, i) => i !== index);
+    form.set(
+      "metadata",
+      data.metadata.filter((_, i) => i !== index)
+    );
+  }
+
+  @action
+  updateMetadata(form, data, index, field, event) {
+    const updated = [...data.metadata];
+    updated[index] = {
+      ...updated[index],
+      [field]: event.target.value,
+    };
     form.set("metadata", updated);
   }
 
   buildMetadataObject(metadataArray) {
     const result = {};
-    (metadataArray || []).forEach(({ key, value }) => {
+    metadataArray.forEach(({ key, value }) => {
       if (key && value) {
         result[key] = value;
       }
@@ -39,7 +47,7 @@ export default class InviteManagerEditor extends Component {
   }
 
   @action
-  async save(formData) {
+  async save(data) {
     this.isSaving = true;
 
     try {
@@ -47,9 +55,9 @@ export default class InviteManagerEditor extends Component {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({
-          email: formData.email,
-          expiration_date: formData.expiration_date,
-          metadata: this.buildMetadataObject(formData.metadata),
+          email: data.email,
+          expiration_date: data.expiration_date,
+          metadata: this.buildMetadataObject(data.metadata),
         }),
       });
     } catch (e) {
