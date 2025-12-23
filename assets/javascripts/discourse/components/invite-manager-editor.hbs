@@ -2,17 +2,16 @@
   <form.Field
     @name="email"
     @title="Email"
-    @validation="required|email"
+    @validation="required"
     @format="large"
     as |field|
   >
-    <field.Input />
+    <field.Input @type="email" />
   </form.Field>
 
   <form.Field
     @name="expiration_date"
     @title="Expiration Date"
-    @validation="required|email"
     @format="large"
     as |field|
   >
@@ -29,25 +28,21 @@
 
     {{#each data.metadata as |pair index|}}
       <form.Container class="invite-metadata-row">
-        <form.Field
-          @name={{concat "metadata." index ".key"}}
-          @title="Key"
-          as |field|
-        >
-          <field.Input />
-        </form.Field>
+        <Input
+          @placeholder="Key"
+          @value={{pair.key}}
+          {{on "input" (fn this.updateMetadata form data index "key")}}
+        />
 
-        <form.Field
-          @name={{concat "metadata." index ".value"}}
-          @title="Value"
-          as |field|
-        >
-          <field.Input />
-        </form.Field>
+        <Input
+          @placeholder="Value"
+          @value={{pair.value}}
+          {{on "input" (fn this.updateMetadata form data index "value")}}
+        />
 
         <form.Button
-          @label="Remove"
           class="btn-danger"
+          @label="Remove"
           @action={{fn this.removeMetadata form data index}}
         />
       </form.Container>
