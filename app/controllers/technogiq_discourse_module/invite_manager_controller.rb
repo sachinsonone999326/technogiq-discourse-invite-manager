@@ -11,7 +11,12 @@ module ::TechnogiqDiscourseModule
     before_action :ensure_admin
 
     def index
-      render json: { status: "ok", message: "Invite route active" }
+      render json: { 
+        invites: [],
+        meta: {
+          total: 0
+        }
+      }
     end
 
     def create
