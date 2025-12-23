@@ -5,8 +5,7 @@ export default {
 
   map() {
     this.route(
-      "discourse-invites",
-      //"technogiq-discourse-invite-manager-invites",
+      "technogiq-discourse-invite-manager-invites",
       { path: "invites" },
      
     );
