@@ -7,7 +7,7 @@ export default <template>
      <form {{on "submit" (prevent-default this.submitInvite)}} class="invite-form">
   <div class="control-group">
     <label>Email</label>
-    <input @value={{this.email}} @type="email" required />
+    <input value={{this.email}} type="email" required />
   </div>
 
   <div class="control-group">
