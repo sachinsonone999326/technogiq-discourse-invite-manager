@@ -13,6 +13,8 @@ en:
     technogiq_invite_manager:
       create: "Create Invite"
       title: "Invite Manager"
+    Remove: "Remove"
+    Add_metadata: "Add metadata"
   technogiq_invites:
     add: "Create Invite"
     create: "Create"
