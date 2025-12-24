@@ -10,7 +10,7 @@ export default class InviteManagerEditor extends Component {
   initialData = {
     email: "",
     expiration_date: "",
-    metadata: [key: "", value: ""],
+    metadata: [{ key: "", value: "" }],
   };
 
   @action
