@@ -49,9 +49,12 @@ export default class InviteManagerEditor extends Component {
   @action
   async save(data) {
     this.isSaving = true;
+    this.successMessage = null;
+    this.errorMessage = null;
+    this.inviteUrl = null;
 
     try {
-      await ajax("/technogiq-discourse-invite-manager/invites", {
+      const response = await ajax("/technogiq-discourse-invite-manager/invites", {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({
@@ -60,7 +63,20 @@ export default class InviteManagerEditor extends Component {
           metadata: this.buildMetadataObject(data.metadata),
         }),
       });
+
+      if (response.status === "ok") {
+        this.successMessage = "Invite created successfully";
+        this.inviteUrl = response.invite_url;
+
+        if (response.status === "ok") {
+          this.successMessage = "Invite created successfully!";
+          this.inviteUrl = response.invite_url;
+        } else {
+          this.errorMessage = response.message || "Something went wrong.";
+        }
+      }
     } catch (e) {
+      this.errorMessage = "Failed to create invite.";
       popupAjaxError(e);
     } finally {
       this.isSaving = false;
