@@ -29,27 +29,21 @@
 
     {{#each data.metadata as |pair index|}}
       <form.Container class="invite-metadata-row">
-        <form.Field
-          @name="meta_key"
-          @title="Key"
-          @validation="required"
-          @format="small"
-           as |field|
-         @action={{fn this.updateMetadata form data index "key"}}
-       >
-       <field.Input @type="text" />
-      </form.Field>
+        <input
+    type="text"
+    class="input"
+    placeholder="Key"
+    value={{pair.key}}
+    {{on "input" (fn this.updateMetadata index "key")}}
+  />
 
-    <form.Field
-       @name="meta_value"
-       @title="Value"
-       @validation="required"
-       @format="small"
-        as |field|
-       @action={{fn this.updateMetadata form data index "value"}}
-       >
-      <field.Input @type="text" />
-     </form.Field>
+    <input
+    type="text"
+    class="input"
+    placeholder="Value"
+    value={{pair.value}}
+    {{on "input" (fn this.updateMetadata index "value")}}
+  />
 
         <form.Button
           class="btn-danger"
