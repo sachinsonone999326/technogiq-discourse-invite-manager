@@ -64,9 +64,7 @@ export default class InviteManagerEditor extends Component {
         }),
       });
 
-      if (response.status === "ok") {
-        this.successMessage = "Invite created successfully";
-        this.inviteUrl = response.invite_url;
+      
 
         if (response.status === "ok") {
           this.successMessage = "Invite created successfully!";
@@ -74,7 +72,7 @@ export default class InviteManagerEditor extends Component {
         } else {
           this.errorMessage = response.message || "Something went wrong.";
         }
-      }
+      
     } catch (e) {
       this.errorMessage = "Failed to create invite.";
       popupAjaxError(e);
