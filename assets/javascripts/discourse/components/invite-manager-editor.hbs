@@ -1,4 +1,20 @@
 <Form @data={{this.initialData}} @onSubmit={{this.save}} as |form data|>
+  {{#if this.successMessage}}
+    <div class="alert alert-success">
+      {{this.successMessage}}
+      <br />
+      <strong>Invite URL:</strong>
+      <a href={{this.inviteUrl}} target="_blank">
+        {{this.inviteUrl}}
+      </a>
+    </div>
+  {{/if}}
+
+  {{#if this.errorMessage}}
+    <div class="alert alert-error">
+      {{this.errorMessage}}
+    </div>
+  {{/if}}
   <form.Field
     @name="email"
     @title="Email"
