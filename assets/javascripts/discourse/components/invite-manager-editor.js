@@ -6,6 +6,9 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default class InviteManagerEditor extends Component {
   @tracked isSaving = false;
+  @tracked successMessage = null;
+  @tracked errorMessage = null;
+  @tracked inviteUrl = null;
 
   initialData = {
     email: "",
