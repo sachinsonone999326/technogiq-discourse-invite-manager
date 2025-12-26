@@ -30,13 +30,14 @@ export default class InviteManagerEditor extends Component {
   }
 
   @action
-  updateMetadata(form, data, index, field, event) {
-    const updated = [...data.metadata];
+  updateMetadata( data, index, field, event) {
+    /*const updated = [...data.metadata];
     updated[index] = {
       ...updated[index],
       [field]: event.target.value,
-    };
-    form.set("metadata", updated);
+    };*/
+    data.metadata[index][field] = event.target.value;
+    //form.set("metadata", updated);
   }
 
   buildMetadataObject(metadataArray) {
