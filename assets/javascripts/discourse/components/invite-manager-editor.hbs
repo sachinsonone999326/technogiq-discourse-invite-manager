@@ -46,20 +46,20 @@
     {{#each data.metadata as |pair index|}}
       <form.Container class="invite-metadata-row">
         <input
-    type="text"
-    class="input"
-    placeholder="Key"
-    value={{pair.key}}
-    {{on "input" (fn this.updateMetadata form data index "key")}}
-  />
+          type="text"
+          class="input"
+          placeholder="Key"
+          value={{pair.key}}
+          {{on "blur" (fn this.updateMetadata form data index "key")}}
+        />
 
-    <input
-    type="text"
-    class="input"
-    placeholder="Value"
-    value={{pair.value}}
-    {{on "input" (fn this.updateMetadata form data index "value")}}
-  />
+        <input
+          type="text"
+          class="input"
+          placeholder="Value"
+          value={{pair.value}}
+          {{on "blur" (fn this.updateMetadata form data index "value")}}
+        />
 
         <form.Button
           class="btn-danger"
