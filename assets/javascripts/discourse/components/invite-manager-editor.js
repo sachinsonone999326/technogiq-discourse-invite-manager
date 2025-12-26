@@ -31,26 +31,14 @@ export default class InviteManagerEditor extends Component {
 
   @action
   updateMetadata(  index, field, event) {
-    /*const updated = [...data.metadata];
+    const updated = [...data.metadata];
     updated[index] = {
       ...updated[index],
       [field]: event.target.value,
-    };*/
-    //data.metadata[index][field] = event.target.value;
-    //form.set("metadata", updated);
-
-    const value = event.target.value;
-
-    // clone only the edited row
-    const updatedRow = {
-      ...this.metadata[index],
-      [field]: value,
     };
-
-    // rebuild array WITHOUT recreating other objects
-    this.metadata = this.metadata.map((row, i) =>
-      i === index ? updatedRow : row
-    );
+   
+    form.set("metadata", updated);
+  
   }
 
   buildMetadataObject(metadataArray) {
