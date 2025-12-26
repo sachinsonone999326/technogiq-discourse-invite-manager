@@ -50,7 +50,7 @@
     class="input"
     placeholder="Key"
     value={{pair.key}}
-    {{on "input" (fn this.updateMetadata form data index "key")}}
+    {{on "input" (fn this.updateMetadata data index "key")}}
   />
 
     <input
@@ -58,7 +58,7 @@
     class="input"
     placeholder="Value"
     value={{pair.value}}
-    {{on "input" (fn this.updateMetadata form data index "value")}}
+    {{on "input" (fn this.updateMetadata data index "value")}}
   />
 
         <form.Button
