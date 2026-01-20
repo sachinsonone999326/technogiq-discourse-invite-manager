@@ -11,44 +11,21 @@ export default class InviteManagerEditor extends Component {
   @tracked inviteUrl = null;
 
   initialData = {
-    email: "",
+    is_expiry_date: false,
     expiration_date: "",
-    metadata: [{ key: "", value: "" }],
+    plan_type: "monthly",
+    membership_duration_value: 1,
+    metadata_json: "{}",
   };
 
-  @action
-  addMetadata(form, data) {
-    form.set("metadata", [...data.metadata, { key: "", value: "" }]);
-  }
+  planTypeOptions = ["days", "monthly", "quarterly", "half-yearly", "yearly"];
 
-  @action
-  removeMetadata(form, data, index) {
-    form.set(
-      "metadata",
-      data.metadata.filter((_, i) => i !== index)
-    );
-  }
-
-  @action
-  updateMetadata(  form, data, index, field, event) {
-    const updated = [...data.metadata];
-    updated[index] = {
-      ...updated[index],
-      [field]: event.target.value,
-    };
-   
-    form.set("metadata", updated);
-  
-  }
-
-  buildMetadataObject(metadataArray) {
-    const result = {};
-    metadataArray.forEach(({ key, value }) => {
-      if (key && value) {
-        result[key] = value;
-      }
-    });
-    return result;
+  parseMetadata(json) {
+    try {
+      return JSON.parse(json || "{}");
+    } catch (e) {
+      throw new Error("Metadata must be valid JSON");
+    }
   }
 
   @action
@@ -59,27 +36,35 @@ export default class InviteManagerEditor extends Component {
     this.inviteUrl = null;
 
     try {
-      const response = await ajax("/technogiq-discourse-invite-manager/invites", {
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-          email: data.email,
-          expiration_date: data.expiration_date,
-          metadata: this.buildMetadataObject(data.metadata),
-        }),
-      });
+      const payload = {
+        is_expiry_date: data.is_expiry_date,
+        metadata: this.parseMetadata(data.metadata_json),
+      };
 
-      
+      if (data.is_expiry_date) {
+        payload.expiration_date = data.expiration_date;
+      } else {
+        payload.plan_type = data.plan_type;
+        payload.membership_duration_value = data.membership_duration_value;
+      }
 
-        if (response.status === "ok") {
-          this.successMessage = "Invite created successfully!";
-          this.inviteUrl = response.invite_url;
-        } else {
-          this.errorMessage = response.message || "Something went wrong.";
+      const response = await ajax(
+        "/technogiq-discourse-invite-manager/invites",
+        {
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(payload),
         }
-      
+      );
+
+      if (response.status === "ok") {
+        this.successMessage = "Invite created successfully!";
+        this.inviteUrl = response.invite_url;
+      } else {
+        this.errorMessage = response.message || "Something went wrong.";
+      }
     } catch (e) {
-      this.errorMessage = "Failed to create invite.";
+      this.errorMessage = e.message || "Failed to create invite.";
       popupAjaxError(e);
     } finally {
       this.isSaving = false;
