@@ -9,6 +9,7 @@ export default class InviteManagerEditor extends Component {
   @tracked successMessage = null;
   @tracked errorMessage = null;
   @tracked inviteUrl = null;
+  @tracked planTypeOptions = ["days", "monthly", "quarterly", "half-yearly", "yearly"];
 
   initialData = {
     is_expiry_date: false,
@@ -18,8 +19,7 @@ export default class InviteManagerEditor extends Component {
     metadata_json: "{}",
   };
 
-  planTypeOptions = ["days", "monthly", "quarterly", "half-yearly", "yearly"];
-
+  
   parseMetadata(json) {
     try {
       return JSON.parse(json || "{}");
