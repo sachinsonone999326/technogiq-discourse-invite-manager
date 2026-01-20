@@ -16,6 +16,6 @@ class UpgradeInviteMetadataStructure < ActiveRecord::Migration[7.0]
     remove_column :invite_metadata, :value
 
     #  New index
-    add_index :invite_metadata, :invite_id, unique: true
+    add_index :invite_metadata, :invite_id
   end
 end
