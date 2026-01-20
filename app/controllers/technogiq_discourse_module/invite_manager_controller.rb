@@ -20,53 +20,30 @@ module ::TechnogiqDiscourseModule
     end
 
     def create
-      #require_dependency "invite_sender"
-      email = params[:email]
+      is_expiry_date = params[:is_expiry_date]
       expiration_date = params[:expiration_date]
+      plan_type = params[:plan_type]
+      membership_duration_value = params[:membership_duration_value]
       metadata = params[:metadata] || {}
-      # Create the Discourse invite
-      invite = Invite.create(email: email, invited_by: current_user)
+
+      invite = Invite.create(invited_by: current_user)
       raise StandardError, "Failed to create invite" unless invite
 
-      # Save metadata using your custom invite_metadata table
-      invite.set_metadata("expiration_date", expiration_date) if expiration_date.present?
-
-      metadata.each do |k, v|
-        invite.set_metadata(k, v)
-      end
+      invite_metadata = InviteMetadata.create!(
+        invite_id: invite.id,
+        is_expiry_date: is_expiry_date,
+        expiration_date: is_expiry_date ? expiration_date : nil,
+        plan_type: is_expiry_date ? nil : plan_type,
+        membership_duration_value: is_expiry_date ? nil : membership_duration_value,
+        metadata: metadata
+      )
 
       render json: {
         status: "ok",
         invite_id: invite.id,
         invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}",
-        metadata: invite.invite_metadata.pluck(:key, :value).to_h
+        metadata: invite_metadata.metadata
       }
-      #invite = Invite.create_invite_link(invited_by: current_user, email: email)
-      #invite = Invite.invite_by_email(email, current_user)
-      #invite_sender = InviteSender.new(current_user)
-      #invite = invite_sender.create_invite(email: email)
-      ##invite = Invite.generate(
-      ##  current_user, # inviter
-      ##  email: email,
-      ##  invited_by: current_user,
-      ##  expires_at: expiration_date
-     ## )
-
-      #invite.set_metadata('expiration_date', expiration_date) if expiration_date.present?
-      #metadata.each { |k, v| invite.set_metadata(k, v) }
-      ##invite.custom_fields ||= {}
-      #invite.custom_fields["expiration_date"] = expiration_date if expiration_date.present?  metadata.each { |k, v| invite.custom_fields[k] = v }  invite.save!
-
-
-      ##render json: {
-       ## status: "ok",
-       # invite_id: invite.id,
-       # invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}",
-        # metadata: invite.invite_metadata.pluck(:key, :value).to_h
-      ##  custom_fields: invite.custom_fields
-     ## }
-
-
     rescue => e
       render json: { status: "error", message: e.message }, status: 500
     end
