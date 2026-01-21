@@ -42,11 +42,13 @@
       @title="Plan Type"
       as |field|
     >
-      <field.Select
-       @options={{this.planTypeOptions}}
-       @valueProperty="id"
-       @labelProperty="name"
-      />
+      <field.Select as |select|>
+       {{#each this.planTypeOptions as |option|}}
+         <select.Option @value={{option.id}}>
+          {{option.name}}
+         </select.Option>
+       {{/each}}
+      </field.Select>
     </form.Field>
 
     <!-- MEMBERSHIP DURATION -->
