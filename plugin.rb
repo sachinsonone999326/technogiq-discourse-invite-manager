@@ -72,6 +72,61 @@ after_initialize do
   #Discourse::Application.routes.append do
     #mount ::TechnogiqDiscourseModule::Engine, at: "/technogiq-discourse-invite-manager"
   #end
+
+  DiscourseEvent.on(:user_created) do |user|
+    # Find the invite used by this user
+    invite = Invite.find_by(invited_user_id: user.id)
+    next unless invite
+
+    invite_metadata = InviteMetadatum.find_by(invite_id: invite.id)
+    next unless invite_metadata
+
+    # Prevent duplicate row
+    next if UserInvited.exists?(user_id: user.id)
+
+    expiration_date = nil
+    calculate_date = nil
+
+    if invite_metadata.is_expiry_date
+      expiration_date = invite_metadata.expiration_date
+      calculate_date = expiration_date
+    else
+      calculate_date = calculate_expiry_date(
+        user.created_at,
+        invite_metadata.plan_type,
+        invite_metadata.membership_duration_value
+      )
+      expiration_date = calculate_date
+    end
+
+    UserInvited.create!(
+      user_id: user.id,
+      invite_id: invite.id,
+      metadata: invite_metadata.metadata || {},
+      is_expiry_date: invite_metadata.is_expiry_date,
+      expiration_date: expiration_date,
+      calculate_date: calculate_date,
+      plan_type: invite_metadata.plan_type,
+      membership_duration_value: invite_metadata.membership_duration_value
+    )
+  end
+
+  def calculate_expiry_date(start_date, plan_type, value)
+    case plan_type
+    when "days"
+      start_date + value.days
+    when "monthly"
+      start_date + value.months
+    when "quarterly"
+      start_date + (value * 3).months
+    when "half-yearly"
+      start_date + (value * 6).months
+    when "yearly"
+      start_date + value.years
+    else
+      nil
+    end
+  end
 end
 
 #Discourse::Application.routes.append do
