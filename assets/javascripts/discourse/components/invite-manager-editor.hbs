@@ -43,7 +43,9 @@
       as |field|
     >
       <field.Select
-        @options={{this.planTypeOptions}}
+       @options={{this.planTypeOptions}}
+       @valueProperty="id"
+       @labelProperty="name"
       />
     </form.Field>
 
