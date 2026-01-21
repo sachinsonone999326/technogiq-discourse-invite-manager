@@ -26,7 +26,8 @@ module ::TechnogiqDiscourseModule
       membership_duration_value = params[:membership_duration_value]
       metadata = params[:metadata] || {}
 
-      invite = Invite.create(invited_by: current_user)
+      #invite = Invite.create(invited_by: current_user)
+      invite = Invite.create(invited_by: current_user, email: nil, max_redemptions: nil)
       raise StandardError, "Failed to create invite" unless invite
 
       invite_metadata = InviteMetadata.create!(
