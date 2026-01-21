@@ -99,7 +99,7 @@ after_initialize do
       expiration_date = calculate_date
     end
 
-    UserInvited.create!(
+    UserInviteum.create!(
       user_id: user.id,
       invite_id: invite.invite_id,
       metadata: invite_metadata.metadata || {},
