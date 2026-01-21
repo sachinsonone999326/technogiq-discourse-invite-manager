@@ -82,7 +82,7 @@ after_initialize do
     next unless invite_metadata
 
     # Prevent duplicate row
-    next if UserInvited.exists?(user_id: user.id)
+    next if UserInviteum.exists?(user_id: user.id)
 
     expiration_date = nil
     calculate_date = nil
@@ -101,7 +101,7 @@ after_initialize do
 
     UserInvited.create!(
       user_id: user.id,
-      invite_id: invite.id,
+      invite_id: invite.invite_id,
       metadata: invite_metadata.metadata || {},
       is_expiry_date: invite_metadata.is_expiry_date,
       expiration_date: expiration_date,
