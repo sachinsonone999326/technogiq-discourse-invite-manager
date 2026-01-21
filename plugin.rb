@@ -29,6 +29,7 @@ after_initialize do
   #require_dependency "invite_sender"
   class ::Invite
     has_many :invite_metadata, dependent: :destroy, class_name: "InviteMetadatum", foreign_key: "invite_id"
+    has_many :user_invited, dependent: :destroy, class_name: "UserInviteum", foreign_key: "invite_id"
 
     def set_metadata(key, value)
       record = invite_metadata.find_or_initialize_by(key: key)
@@ -40,6 +41,11 @@ after_initialize do
       record = invite_metadata.find_by(key: key)
       record&.value
     end
+  end
+
+  class ::User
+    has_many :user_invited, dependent: :destroy, class_name: "UserInviteum", foreign_key: "user_id"
+
   end
 
   #add_admin_route "technogiq-discourse-invite-manager.title", "technogiq-discourse-invite-manager"
