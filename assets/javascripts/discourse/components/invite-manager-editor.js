@@ -9,8 +9,13 @@ export default class InviteManagerEditor extends Component {
   @tracked successMessage = null;
   @tracked errorMessage = null;
   @tracked inviteUrl = null;
-  @tracked planTypeOptions = ["days", "monthly", "quarterly", "half-yearly", "yearly"];
-
+  @tracked planTypeOptions = [
+  { id: "days", name: "Days" },
+  { id: "monthly", name: "Monthly" },
+  { id: "quarterly", name: "Quarterly" },
+  { id: "half-yearly", name: "Half Yearly" },
+  { id: "yearly", name: "Yearly" },
+];
   initialData = {
     is_expiry_date: false,
     expiration_date: "",
