@@ -75,7 +75,7 @@ after_initialize do
 
   DiscourseEvent.on(:user_created) do |user|
     # Find the invite used by this user
-    invite = InvitedUsers.find_by(user_id: user.id)
+    invite = InvitedUser.find_by(user_id: user.id)
     next unless invite
 
     invite_metadata = InviteMetadatum.find_by(invite_id: invite.invite_id)
