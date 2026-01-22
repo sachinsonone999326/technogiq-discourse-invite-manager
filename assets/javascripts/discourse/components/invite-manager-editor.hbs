@@ -82,10 +82,12 @@
           {{on "blur" (fn this.updateMetadata form data index "key")}}
         />
 
-        
+        <textarea
+          @value={{pair.value}}
+          rows="6"
+          {{on "blur" (fn this.updateMetadata form data index "value")}}
+         />
        
-
-        <field.Textarea rows="6"  value={{pair.value}} {{on "blur" (fn this.updateMetadata form data index "value")}} />
 
         <form.Button
           class="btn-danger"
