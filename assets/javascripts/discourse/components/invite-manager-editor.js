@@ -21,7 +21,7 @@ export default class InviteManagerEditor extends Component {
     expiration_date: "",
     plan_type: "monthly",
     membership_duration_value: 1,
-    metadata_json: "{}",
+    metadata: [{ key: "", value: "" }],
   };
 
   
@@ -34,6 +34,41 @@ export default class InviteManagerEditor extends Component {
   }
 
   @action
+  addMetadata(form, data) {
+    form.set("metadata", [...data.metadata, { key: "", value: "" }]);
+  }
+
+  @action
+  removeMetadata(form, data, index) {
+    form.set(
+      "metadata",
+      data.metadata.filter((_, i) => i !== index)
+    );
+  }
+
+  @action
+  updateMetadata(  form, data, index, field, event) {
+    const updated = [...data.metadata];
+    updated[index] = {
+      ...updated[index],
+      [field]: event.target.value,
+    };
+   
+    form.set("metadata", updated);
+  
+  }
+
+  buildMetadataObject(metadataArray) {
+    const result = {};
+    metadataArray.forEach(({ key, value }) => {
+      if (key && value) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
+
+  @action
   async save(data) {
     this.isSaving = true;
     this.successMessage = null;
@@ -43,7 +78,7 @@ export default class InviteManagerEditor extends Component {
     try {
       const payload = {
         is_expiry_date: data.is_expiry_date,
-        metadata: this.parseMetadata(data.metadata_json),
+        metadata: this.buildMetadataObject(data.metadata),
       };
 
       if (data.is_expiry_date) {
