@@ -62,13 +62,39 @@
   {{/if}}
 
   <!-- METADATA JSON -->
-  <form.Field
-    @name="metadata_json"
-    @title="Metadata (JSON)"
-    as |field|
-  >
-    <field.Textarea rows="6" />
-  </form.Field>
+  
+
+  <form.Section @title="Metadata">
+    <form.Container>
+      <form.Button
+        @label="Add_metadata"
+        @action={{fn this.addMetadata form data}}
+      />
+    </form.Container>
+
+    {{#each data.metadata as |pair index|}}
+      <form.Container class="invite-metadata-row">
+        <input
+          type="text"
+          class="input"
+          placeholder="Key"
+          value={{pair.key}}
+          {{on "blur" (fn this.updateMetadata form data index "key")}}
+        />
+
+        
+       
+
+        <field.Textarea rows="6"  value={{pair.value}} {{on "blur" (fn this.updateMetadata form data index "value")}} />
+
+        <form.Button
+          class="btn-danger"
+          @label="Remove"
+          @action={{fn this.removeMetadata form data index}}
+        />
+      </form.Container>
+    {{/each}}
+  </form.Section>
 
   <form.Actions>
     <form.Submit @disabled={{this.isSaving}} />
