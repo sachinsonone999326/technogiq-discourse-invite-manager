@@ -9,5 +9,17 @@ export default {
       { path: "invites" },
      
     );
+
+    this.route(
+      "technogiq-discourse-invite-manager-users",
+      { path: "users" }
+    );
+
+    this.route(
+      "technogiq-discourse-invite-manager-manageinvites",
+      { path: "manageinvites" }
+    );
+
+    
   },
 };
