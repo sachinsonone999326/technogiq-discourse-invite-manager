@@ -13,13 +13,12 @@ en:
     technogiq_invite_manager:
       create: "Create Invite"
       title: "Invite Manager"
+      manageusers: "Manager Invites"
+      manageinvites: "Manager Users"
     Remove: "Remove"
     Add_metadata: "Add metadata"
   technogiq_invites:
     add: "Create Invite"
     create: "Create"
     modal_title: "Create Invite"
-  technogiq_invite_manager:
-    title: "Invite Manager"
-    manageusers: "Manager Invites"
-    manageinvites: "Manager Users"
+  
