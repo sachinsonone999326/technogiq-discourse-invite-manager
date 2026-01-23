@@ -17,17 +17,19 @@ export default {
           description: "technogiq_invite_manager.title",
         },
 
-        {
-          label: "technogiq_invite_manager.manageusers",
-          route: "adminPlugins.show.technogiq-discourse-invite-manager-users",
-          description: "technogiq_invite_manager.manageusers",
-        },
-
+       
         {
           label: "technogiq_invite_manager.manageinvites",
           route: "adminPlugins.show.technogiq-discourse-invite-manager-manageinvites",
           description: "technogiq_invite_manager.manageinvites",
         },
+
+         {
+          label: "technogiq_invite_manager.manageusers",
+          route: "adminPlugins.show.technogiq-discourse-invite-manager-users",
+          description: "technogiq_invite_manager.manageusers",
+        },
+
         
       ]);
     });
