@@ -1,1 +1,56 @@
+{{#if this.loading}}
+  <p>Loading invites…</p>
+{{else}}
+  <table class="invite-grid">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Plan</th>
+        <th>Expiry</th>
+        <th>Expiration Date</th>
+        <th>Duration</th>
+        <th>Subscribers</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each this.invites as |invite|}}
+        <tr>
+          <td>{{invite.id}}</td>
+          <td>{{invite.plan_type}}</td>
+          <td>{{if invite.is_expiry_date "Yes" "No"}}</td>
+          <td>{{invite.expiration_date}}</td>
+          <td>{{invite.membership_duration_value}}</td>
+          <td class="subscriber-count">
+            {{invite.subscriber_count}}
+          </td>
+          <td>{{invite.created_at}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div class="pagination-controls">
+    <button
+      class="btn"
+      disabled={{eq this.page 1}}
+      {{on "click" this.prevPage}}
+    >
+      ◀ Prev
+    </button>
+
+    <span>
+      Page {{this.page}} of {{this.totalPages}}
+    </span>
+
+    <button
+      class="btn"
+      disabled={{eq this.page this.totalPages}}
+      {{on "click" this.nextPage}}
+    >
+      Next ▶
+    </button>
+  </div>
+{{/if}}
 
