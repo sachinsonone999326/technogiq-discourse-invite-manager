@@ -5,4 +5,6 @@ en:
     technogiq_invite_manager_enabled: "Enable Technogiq Invite Manager"
   technogiq_invite_manager:
     title: "Invite Manager"
+    manageusers: "Manager Invites"
+    manageinvites: "Manager Users"
 
