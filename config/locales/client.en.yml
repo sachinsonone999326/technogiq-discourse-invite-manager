@@ -21,3 +21,5 @@ en:
     modal_title: "Create Invite"
   technogiq_invite_manager:
     title: "Invite Manager"
+    manageusers: "Manager Invites"
+    manageinvites: "Manager Users"
