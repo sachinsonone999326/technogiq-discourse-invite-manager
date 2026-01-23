@@ -19,6 +19,24 @@ module ::TechnogiqDiscourseModule
       }
     end
 
+    def user
+      render json: { 
+        users: [],
+        meta: {
+          total: 0
+        }
+      }
+    end
+
+    def manageinvite
+      render json: { 
+        manageinvites: [],
+        meta: {
+          total: 0
+        }
+      }
+    end
+
     def create
       is_expiry_date = params[:is_expiry_date]
       expiration_date = params[:expiration_date]
