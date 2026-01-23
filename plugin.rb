@@ -53,6 +53,13 @@ after_initialize do
   Discourse::Application.routes.append do
     get "/admin/plugins/technogiq-discourse-invite-manager/invites" => "technogiq_discourse_module/invite_manager#index",
         :constraints => StaffConstraint.new
+  
+    get "/admin/plugins/technogiq-discourse-invite-manager/users" => "technogiq_discourse_module/invite_manager#user",
+        :constraints => StaffConstraint.new
+
+    get "/admin/plugins/technogiq-discourse-invite-manager/manageinvites" => "technogiq_discourse_module/invite_manager#manageinvite",
+        :constraints => StaffConstraint.new
+    
     #get "/admin/plugins/technogiq-discourse-invite-manager" => "technogiq_discourse_module/invite_manager#index",
     #   :constraints => StaffConstraint.new
     #get '/admin/plugins/technogiq-discourse-invite-manager' => 'admin/plugins#index', constraints: StaffConstraint.new
