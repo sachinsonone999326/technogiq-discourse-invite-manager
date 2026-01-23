@@ -40,7 +40,7 @@ module ::TechnogiqDiscourseModule
       base_query = InviteMetadata
         .left_joins("LEFT JOIN user_invited ON user_invited.invite_id = invite_metadata.id")
         .group("invite_metadata.id")
-        .order("invite_metadata.id DESC")
+        
 
       total_count = base_query.count.length
 
