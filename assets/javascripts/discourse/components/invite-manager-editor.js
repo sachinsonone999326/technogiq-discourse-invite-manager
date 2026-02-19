@@ -13,11 +13,13 @@ export default class InviteManagerEditor extends Component {
   { id: "days", name: "Days" },
   { id: "months", name: "Months" },
   { id: "years", name: "Years" },
+  ];
   @tracked renewalPeriodOptions = [
   { id: "monthly", name: "Monthly" },
   { id: "quarterly", name: "Quarterly" },
   { id: "half-yearly", name: "Half Yearly" },
   { id: "yearly", name: "Yearly" },
+  ];
   @tracked expireAfterOptions = [
   { id: "1", name: "1 day" },
   { id: "7", name: "7 days" },
