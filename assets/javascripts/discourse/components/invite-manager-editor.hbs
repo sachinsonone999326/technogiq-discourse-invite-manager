@@ -41,7 +41,7 @@
   </form.Field>
 
   <form.Field
-                @name="maxRedemptions"
+                @name="max_uses"
                 @title={{i18n "user.invited.invite.max_redemptions_allowed"}}
                 @type="number"
                 @format="small"
@@ -51,7 +51,7 @@
                 <field.Input
                   type="number"
                   min="1"
-                  max={{this.maxRedemptionsAllowedLimit}}
+                  max={{this.siteSettings.invite_link_max_redemptions_limit}}
                 />
   </form.Field>
 
@@ -65,8 +65,8 @@
                 <field.Select as |select|>
                   {{#each this.expireAfterOptions as |option|}}
                     <select.Option
-                      @value={{option.value}}
-                    >{{option.text}}</select.Option>
+                      @value={{option.id}}
+                    >{{option.name}}</select.Option>
                   {{/each}}
                 </field.Select>
   </form.Field>
