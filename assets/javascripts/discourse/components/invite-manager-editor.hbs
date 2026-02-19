@@ -51,7 +51,7 @@
                 <field.Input
                   type="number"
                   min="1"
-                  max={{this.siteSettings.invite_link_max_redemptions_limit}}
+                  max={{this.siteSettings.invite_link_max_redemptions_limit_users}}
                 />
   </form.Field>
 
@@ -69,6 +69,39 @@
                     >{{option.name}}</select.Option>
                   {{/each}}
                 </field.Select>
+  </form.Field>
+
+  <form.Field
+                @name="arrive_at_topic"
+                @title={{i18n "user.invited.invite.invite_to_topic"}}
+                @format="large"
+                as |field|
+              >
+                <field.Custom>
+                  <TopicChooser
+                    @value={{field.value}}
+                    @content={{this.topics}}
+                    @onChange={{fn this.onChangeTopic field.set}}
+                    @options={{hash additionalFilters="status:public"}}
+                  />
+                </field.Custom>
+  </form.Field>
+
+
+  <form.Field
+                @name="add_to_groups"
+                @title={{i18n "user.invited.invite.add_to_groups"}}
+                @format="large"
+                as |field|
+              >
+                <field.Custom>
+                  <GroupChooser
+                    @content={{this.allGroups}}
+                    @value={{field.value}}
+                    @labelProperty="name"
+                    @onChange={{field.set}}
+                  />
+                </field.Custom>
   </form.Field>
 
   <!-- IS EXPIRY DATE -->
