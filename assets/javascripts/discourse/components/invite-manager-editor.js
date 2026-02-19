@@ -31,9 +31,10 @@ export default class InviteManagerEditor extends Component {
   initialData = {
     is_expiry_date: false,
     expiration_date: "",
-    plan_type: "monthly",
+    plan_type: "days",
     membership_duration_value: 1,
     renewal_period_value: 1,
+    renewal_period: 'monthly',
     metadata: [{ key: "", value: "" }],
     description: "",
     restrict_to: "",
