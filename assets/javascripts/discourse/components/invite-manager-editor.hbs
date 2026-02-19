@@ -30,7 +30,7 @@
               @name="restrict_to"
               @title={{i18n "user.invited.invite.restrict"}}
               @format="large"
-              @onSet={{this.handleRestrictToChange}}
+              
               as |field|
             >
               <field.Input
@@ -58,7 +58,7 @@
   <form.Field
                 @name="expire_after"
                 @title={{i18n "user.invited.invite.expires_after"}}
-                @value={{field.value}}
+                @value=90
                 @format="large"
                 @validation="required"
                 as |field|
