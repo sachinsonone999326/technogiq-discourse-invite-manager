@@ -58,6 +58,7 @@
   <form.Field
                 @name="expire_after"
                 @title={{i18n "user.invited.invite.expires_after"}}
+                @value={{field.value}}
                 @format="large"
                 @validation="required"
                 as |field|
@@ -78,12 +79,7 @@
                 as |field|
               >
                 <field.Custom>
-                  <TopicChooser
-                    @value={{field.value}}
-                    @content={{this.topics}}
-                    @onChange={{fn this.onChangeTopic field.set}}
-                    @options={{hash additionalFilters="status:public"}}
-                  />
+                  
                 </field.Custom>
   </form.Field>
 
@@ -95,12 +91,7 @@
                 as |field|
               >
                 <field.Custom>
-                  <GroupChooser
-                    @content={{this.allGroups}}
-                    @value={{field.value}}
-                    @labelProperty="name"
-                    @onChange={{field.set}}
-                  />
+                  
                 </field.Custom>
   </form.Field>
 
