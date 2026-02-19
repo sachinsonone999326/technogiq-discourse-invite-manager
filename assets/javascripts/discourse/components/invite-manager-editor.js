@@ -11,17 +11,38 @@ export default class InviteManagerEditor extends Component {
   @tracked inviteUrl = null;
   @tracked planTypeOptions = [
   { id: "days", name: "Days" },
+  { id: "months", name: "Months" },
+  { id: "years", name: "Years" },
+  @tracked renewalPeriodOptions = [
   { id: "monthly", name: "Monthly" },
   { id: "quarterly", name: "Quarterly" },
   { id: "half-yearly", name: "Half Yearly" },
   { id: "yearly", name: "Yearly" },
+  @tracked expireAfterOptions = [
+  { id: "1", name: "1 day" },
+  { id: "7", name: "7 days" },
+  { id: "30", name: "30 days" },
+  { id: "90", name: "90 days" },
+  { id: "36500", name: "36500 days" },
+  { id: "999999", name: "Never" },
 ];
   initialData = {
     is_expiry_date: false,
     expiration_date: "",
     plan_type: "monthly",
     membership_duration_value: 1,
+    renewal_period_value: 1,
     metadata: [{ key: "", value: "" }],
+    description: "",
+    restrict_to: "",
+    max_uses: 1,
+    expire_after: 90,
+    arrive_at_topic: 0,
+    add_to_groups: 0,
+    number_of_invitations : 1,
+    is_batch_mode: false,
+    
+    
   };
 
   
