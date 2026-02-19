@@ -17,6 +17,14 @@
     </div>
   {{/if}}
 
+  <form.Field
+              @name="description"
+              @title={{i18n "user.invited.invite.description"}}
+              @format="large"
+              @validation={{this.descriptionValidation}}
+              as |field|
+            >
+
   <!-- IS EXPIRY DATE -->
   <form.Field
     @name="is_expiry_date"
