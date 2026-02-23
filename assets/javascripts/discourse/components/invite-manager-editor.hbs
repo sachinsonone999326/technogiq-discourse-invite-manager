@@ -173,6 +173,25 @@
 
     </form.Container>
 
+<form.Field
+    @name="is_batch_mode"
+    @title="Use Batch Mode"
+    as |field|
+  >
+    <field.Checkbox />
+  </form.Field>
+  
+{{#if data.is_batch_mode}}
+  <form.Field
+      @name="number_of_invitations"
+      @title="Number of Invitations"
+      as |field|
+    >
+      <field.Input @type="number" min="1" />
+    </form.Field>
+
+  {{/if}}
+
   <!-- METADATA JSON -->
   
 
@@ -184,19 +203,24 @@
       />
     </form.Container>
 
+    
+
     {{#each data.metadata as |pair index|}}
       <form.Container class="invite-metadata-row">
         <input
           type="text"
           class="input"
           placeholder="Key"
+          @format="medium"
           value={{pair.key}}
           {{on "blur" (fn this.updateMetadata form data index "key")}}
         />
 
+        
+
         <textarea
          class="input"
-         rows="6"
+         rows="1"
          {{on "blur" (fn this.updateMetadata form data index "value")}}
         >{{pair.value}}</textarea>
 
