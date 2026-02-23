@@ -103,13 +103,46 @@ module ::TechnogiqDiscourseModule
         is_expiry_date: is_expiry_date,
       })
 
+      expiry_date = (params[:expire_after].to_i).days.from_now
+      number_of_invitations = is_batch_mode ? (number_of_invitations || 1).to_i : 1
       #invite = Invite.create(invited_by: current_user)
       #invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: 5000)
       created_invites = []
+
       ActiveRecord::Base.transaction do
         number_of_invitations.times do
-          invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: max_uses, description: description, domain:  restrict_to,  group_ids: add_to_groups, expires_at: expire_after, invite_to_topic: arrive_at_topic)
+          #invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: max_uses, description: description, domain:  restrict_to,  group_ids: add_to_groups, expires_at: expire_after, invite_to_topic: arrive_at_topic)
+          invite = Invite.create(invited_by: current_user,
+                     email: nil,
+                     max_redemptions_allowed: max_uses,
+                     description: description,
+                     domain:  restrict_to,
+                     #group_ids: 41, 
+                     expires_at: expiry_date,
+                     #topic_id: 1,
+                   )
+
           raise StandardError, "Failed to create invite" unless invite
+
+          if arrive_at_topic.present?
+             invite.topic_invites.destroy_all
+             invite.topic_invites.create!(topic_id: arrive_at_topic)
+          end
+
+          group_ids_array = add_to_groups.to_s.split(",").map(&:to_i)
+
+          # 2. Add groups to the invite
+          if group_ids_array.present?
+            # Clear existing if necessary (standard Discourse pattern)
+            #invite.invited_groups.destroy_all
+
+            # Fetch group objects to ensure they exist before adding
+            groups = Group.where(id: group_ids_array)
+
+            groups.each do |group|
+              invite.invited_groups.find_or_create_by!(group_id: group.id)
+            end
+          end
 
           invite_metadata = InviteMetadata.create!(
             invite_id: invite.id,
