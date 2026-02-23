@@ -80,9 +80,20 @@ module ::TechnogiqDiscourseModule
       plan_type = params[:plan_type]
       membership_duration_value = params[:membership_duration_value]
       metadata = params[:metadata] || {}
+      renewal_period_value = params[:renewal_period_value]
+      renewal_period = params[:renewal_period]
+      description = params[:description]
+      restrict_to = params[:restrict_to]
+      max_uses = params[:max_uses]
+      expire_after = params[:expire_after]
+      arrive_at_topic = params[:arrive_at_topic]
+      add_to_groups = params[:add_to_groups]
+      number_of_invitations = params[:number_of_invitations]
+      is_batch_mode = params[:is_batch_mode]
 
       #invite = Invite.create(invited_by: current_user)
-      invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: 5000)
+      #invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: 5000)
+      invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: max_uses, description: description, domain:  restrict_to,  group_ids: add_to_groups, expires_at: expire_after, invite_to_topic: arrive_at_topic)
       raise StandardError, "Failed to create invite" unless invite
 
       invite_metadata = InviteMetadata.create!(
