@@ -91,25 +91,48 @@ module ::TechnogiqDiscourseModule
       number_of_invitations = params[:number_of_invitations]
       is_batch_mode = params[:is_batch_mode]
 
+      base_metadata = params[:metadata] || {}
+      enriched_metadata = base_metadata.merge({
+        plan_type: plan_type,
+        membership_duration_value: membership_duration_value,
+        renewal_period: renewal_period,
+        renewal_period_value: renewal_period_value,
+        is_batch_mode: is_batch_mode,
+        number_of_invitations: number_of_invitations,
+        expiration_date: expiration_date,
+        is_expiry_date: is_expiry_date,
+      })
+
       #invite = Invite.create(invited_by: current_user)
       #invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: 5000)
-      invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: max_uses, description: description, domain:  restrict_to,  group_ids: add_to_groups, expires_at: expire_after, invite_to_topic: arrive_at_topic)
-      raise StandardError, "Failed to create invite" unless invite
+      created_invites = []
+      ActiveRecord::Base.transaction do
+        number_of_invitations.times do
+          invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: max_uses, description: description, domain:  restrict_to,  group_ids: add_to_groups, expires_at: expire_after, invite_to_topic: arrive_at_topic)
+          raise StandardError, "Failed to create invite" unless invite
 
-      invite_metadata = InviteMetadata.create!(
-        invite_id: invite.id,
-        is_expiry_date: is_expiry_date,
-        expiration_date: is_expiry_date ? expiration_date : nil,
-        plan_type: is_expiry_date ? nil : plan_type,
-        membership_duration_value: is_expiry_date ? nil : membership_duration_value,
-        metadata: metadata
-      )
+          invite_metadata = InviteMetadata.create!(
+            invite_id: invite.id,
+            is_expiry_date: is_expiry_date,
+            expiration_date: is_expiry_date ? expiration_date : nil,
+            plan_type: is_expiry_date ? nil : plan_type,
+            membership_duration_value: is_expiry_date ? nil : membership_duration_value,
+            metadata: enriched_metadata
+          )
+          created_invites << {
+            invite_id: invite.id,
+            invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}"
+          } 
+        end
+      end
 
       render json: {
         status: "ok",
-        invite_id: invite.id,
-        invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}",
-        metadata: invite_metadata.metadata
+        #invite_id: invite.id,
+        #invite_url: "#{Discourse.base_url}/invites/#{invite.invite_key}",
+        #metadata: invite_metadata.metadata
+        invites: created_invites,
+        count: created_invites.size
       }
     rescue => e
       render json: { status: "error", message: e.message }, status: 500
