@@ -112,6 +112,18 @@ export default class InviteManagerEditor extends Component {
         payload.membership_duration_value = data.membership_duration_value;
       }
 
+      payload.renewal_period_value = data.renewal_period_value;
+      payload.renewal_period = data.renewal_period;
+
+      payload.description = data.description;
+      payload.restrict_to = data.restrict_to;
+      payload.max_uses = data.max_uses;
+      payload.expire_after = data.expire_after;
+      payload.arrive_at_topic = data.arrive_at_topic;
+      payload.add_to_groups = data.add_to_groups;
+      payload.number_of_invitations = data.number_of_invitations;
+      payload.is_batch_mode = data.is_batch_mode;
+
       const response = await ajax(
         "/technogiq-discourse-invite-manager/invites",
         {
