@@ -21,12 +21,12 @@ export default class InviteManagerEditor extends Component {
   { id: "yearly", name: "Yearly" },
   ];
   @tracked expireAfterOptions = [
-  { id: "1", name: "1 day" },
-  { id: "7", name: "7 days" },
-  { id: "30", name: "30 days" },
-  { id: "90", name: "90 days" },
-  { id: "36500", name: "36500 days" },
-  { id: "999999", name: "Never" },
+  { id: 1, name: "1 day" },
+  { id: 7, name: "7 days" },
+  { id: 30, name: "30 days" },
+  { id: 90, name: "90 days" },
+  { id: 36500, name: "36500 days" },
+  { id: 999999, name: "Never" },
 ];
   initialData = {
     is_expiry_date: false,
