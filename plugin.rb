@@ -8,12 +8,7 @@
 # url: https://github.com/sachinsonone999326/technogiq-discourse-invite-manager/
 
 enabled_site_setting :invite_manager_enabled
-User.register_custom_field_type 'admin_plan_type', :string
-User.register_custom_field_type 'admin_membership_duration_value', :integer
-User.register_custom_field_type 'admin_renewal_period', :string
-User.register_custom_field_type 'admin_renewal_period_value', :integer
-User.register_custom_field_type 'admin_metadata', :json
-User.register_custom_field_type 'expiration_date', :string
+
 
 module ::TechnogiqDiscourseModule
   PLUGIN_NAME = "technogiq-discourse-invite-manager"
@@ -30,6 +25,12 @@ require_relative "app/models/invite_metadata"
 
 
 after_initialize do
+  User.register_custom_field_type 'admin_plan_type', :string
+  User.register_custom_field_type 'admin_membership_duration_value', :integer
+  User.register_custom_field_type 'admin_renewal_period', :string
+  User.register_custom_field_type 'admin_renewal_period_value', :integer
+  User.register_custom_field_type 'admin_metadata', :json
+  User.register_custom_field_type 'expiration_date', :string
   require_dependency "invite"
   #add_admin_route 'invite_manager.title', 'invite-manager'
   #require_dependency "invite_sender"
