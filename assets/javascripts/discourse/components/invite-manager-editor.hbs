@@ -141,7 +141,37 @@
        {{/each}}
       </field.Select>
     </form.Field>
+
+    </form.Container>
   {{/if}}
+
+   <form.Container class="invite-metadata-row">
+    
+
+    <!-- MEMBERSHIP DURATION -->
+    <form.Field
+      @name="renewal_period_value"
+      @title="Allowed renewal period"
+      as |field|
+    >
+      <field.Input @type="number" min="1" />
+    </form.Field>
+
+      <form.Field
+      @name="renewal_period"
+      
+      as |field|
+    >
+      <field.Select as |select|>
+       {{#each this.renewalPeriodOptions as |option|}}
+         <select.Option @value={{option.id}}>
+          {{option.name}}
+         </select.Option>
+       {{/each}}
+      </field.Select>
+    </form.Field>
+
+    </form.Container>
 
   <!-- METADATA JSON -->
   
