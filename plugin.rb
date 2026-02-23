@@ -113,6 +113,12 @@ after_initialize do
       expiration_date = calculate_date
     end
 
+    user.custom_fields['admin_plan_type'] = invite_metadata.plan_type
+    user.custom_fields['admin_membership_duration_value'] = invite_metadata.membership_duration_value
+    user.custom_fields['admin_metadata'] = invite_metadata.metadata || {}
+    user.custom_fields['expiration_date'] = calculate_date
+    user.save_custom_fields
+
     UserInviteum.create!(
       user_id: user.id,
       invite_id: invite.invite_id,
