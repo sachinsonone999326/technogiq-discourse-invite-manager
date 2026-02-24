@@ -108,6 +108,10 @@ module ::TechnogiqDiscourseModule
       #invite = Invite.create(invited_by: current_user)
       #invite = Invite.create(invited_by: current_user, email: nil, max_redemptions_allowed: 5000)
       created_invites = []
+      uniquestring = loop do
+        token = SecureRandom.base58(12) # short + URL safe (Discourse style)
+        break token unless InviteMetadata.exists?(uniqueid: token)
+      end
 
       ActiveRecord::Base.transaction do
         number_of_invitations.times do
@@ -150,7 +154,8 @@ module ::TechnogiqDiscourseModule
             expiration_date: is_expiry_date ? expiration_date : nil,
             plan_type: is_expiry_date ? nil : plan_type,
             membership_duration_value: is_expiry_date ? nil : membership_duration_value,
-            metadata: enriched_metadata
+            metadata: enriched_metadata,
+            uniqueid: uniquestring
           )
           created_invites << {
             invite_id: invite.id,
