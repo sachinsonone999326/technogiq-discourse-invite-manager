@@ -1,37 +1,149 @@
 {{#if this.loading}}
   <p>Loading invites…</p>
 {{else}}
+
+  <header class="invite-header">
+
+  <h1>Sent Invites</h1>
+
+  <div
+    class="segmented"
+    role="tablist"
+    aria-label="Filter by status"
+  >
+
+    <button
+      class="{{if (eq this.activeTab 'all') 'active'}}"
+      {{on "click" (fn this.changeTab "all")}}
+    >
+      All
+    </button>
+
+    <button
+      class="{{if (eq this.activeTab 'active') 'active'}}"
+      {{on "click" (fn this.changeTab "active")}}
+    >
+      Active
+    </button>
+
+    <button
+      class="{{if (eq this.activeTab 'completed') 'active'}}"
+      {{on "click" (fn this.changeTab "completed")}}
+    >
+      Completed
+    </button>
+
+  </div>
+
+  <div class="search">
+
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+
+      <path
+        d="M21 21l-4.35-4.35"
+        stroke="#9ca3af"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+      <circle
+        cx="11"
+        cy="11"
+        r="6"
+        stroke="#9ca3af"
+        stroke-width="2"
+      />
+
+    </svg>
+
+    <Input
+      @type="text"
+      @value={{this.searchTerm}}
+      placeholder="Search requests, descriptions, groups, urls"
+      aria-label="Search requests"
+    />
+
+  </div>
+
+</header>
+
+
   <table class="invite-grid">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Plan</th>
-        <th>Expiry</th>
-        <th>Expiration Date</th>
-        <th>Duration</th>
-        <th>Subscribers</th>
-        <th>Created</th>
+        <th>Request</th>
+        <th>Creation date</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Groups</th>
+        <th>Actions</th>
+        <th>Download</th>
       </tr>
     </thead>
 
     <tbody>
-      {{#each this.invites as |invite|}}
+      {{#each this.filteredInvites as |invite|}}
         <tr>
           <td>{{invite.id}}</td>
-          <td>{{invite.plan_type}}</td>
-          <td>{{if invite.is_expiry_date "Yes" "No"}}</td>
-          <td>{{invite.expiration_date}}</td>
-          <td>{{invite.membership_duration_value}}</td>
-          <td class="subscriber-count">
-            {{invite.subscriber_count}}
+          <td>{{this.formatInviteDate invite.created_at}}</td>
+          <td>{{invite.description}}</td>
+          <td style="width:160px;">
+           <div class="status-cell">
+            <div class="status-text">{{invite.max_redemptions_allowed}} Total</div>
+             <div class="status-bar">
+               <span style="width: {{this.getRedeemedPercentage invite}}%; background: #22c55e;"></span>
+               <span style="width: {{this.getRemainingPercentage invite}}%; background: var(--gray);"></span>
+             </div>
+            <div class="status-text">{{invite.redemption_count}} Redeemed · {{if invite.is_expired invite.redemption_count 0}} Expired</div>
+           </div>
           </td>
-          <td>{{invite.created_at}}</td>
+          <td>{{invite.group_names}}</td>
+          <td class="actions">
+          
+           <DMenu
+      @identifier="view-invites-menu"
+      @icon="ellipsis"
+      class="btn-flat more-button"
+      @autofocus={{true}}
+    >
+      <DropdownMenu as |dropdown|>
+        <dropdown.item>
+          <DButton
+            @action={{this.viewInvite invite}}
+            @label="View_invites"
+            class="btn-transparent unassign-btn"
+          />
+        </dropdown.item>
+        <dropdown.item>
+          <DButton
+            @action={{this.viewDetails invite}}
+            @label="View_details"
+            class="btn-transparent edit-assignment-btn"
+          />
+        </dropdown.item>
+      </DropdownMenu>
+    </DMenu>
+           </td>
+          <td>  
+             <DButton
+              @icon="download"
+              @action={{fn this.downloadInvite invite}}
+              class="btn-flat download-btn"
+             />
+          </td>
         </tr>
       {{/each}}
     </tbody>
   </table>
 
-  <div class="pagination-controls">
+  <!--<div class="pagination-controls">
     <button
       class="btn"
       disabled={{eq this.page 1}}
@@ -51,6 +163,94 @@
     >
       Next ▶
     </button>
-  </div>
+  </div>-->
+
+<style>
+.admin-contents table td {
+    overflow-wrap: anywhere;
+}
+
+.status-bar{
+  display: flex;
+    height: 8px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #eef2f7;
+    border: 1px solid #eef2f7;
+}
+
+.status-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 220px;
+}
+
+.status-text {
+    font-size: 12px;
+    color: var(--muted);
+}
+.invite-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.invite-header h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.segmented {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-low);
+  border-radius: 10px;
+}
+
+.segmented button {
+  border: none;
+  background: transparent;
+  padding: 13px 19px;
+  margin: -6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary-high);
+  transition: all 0.2s ease;
+}
+
+.segmented button.active {
+  background: #08c;
+  color: #fff;
+}
+
+.search {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 320px;
+}
+
+.search input {
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+.segmented{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size: 12px;}
+  .segmented button{border:0;padding:13px 19px;background:transparent;cursor:pointer;font-weight:600;color:var(--muted)}
+  .search{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .search input{padding:8px 10px;border-radius:8px;width:300px; margin-bottom:0}
+
+</style>
 {{/if}}
 

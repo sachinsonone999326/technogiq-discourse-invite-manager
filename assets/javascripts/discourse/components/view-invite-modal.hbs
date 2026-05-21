@@ -1,0 +1,40 @@
+<template>
+    <DModal
+      @title="Invitations for request #{{model.id}} — {{this.inviteDetails.invites.length}} item(s)"
+      @closeModal={{@closeModal}}
+      @inline={{@inline}}
+      class=""
+    >
+     <:body>
+    
+     {{#if this.loading}}
+      <p>Loading...</p>
+    {{else}}
+
+      <table class="invite-grid" style="width:100%">
+        <thead>
+          <tr>
+            <th style="padding:10px;">List of unique invite URLs:</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each this.inviteDetails.invites as |item|}}
+            <tr>
+              <td style="padding:10px;">{{this.inviteDetails.baseUrl}}/invites/{{item.invite_key}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    {{/if}}
+
+     </:body>
+  <:footer>
+    <DButton
+      @label="Close"
+      @action={{@closeModal}}
+      class="btn-primary"
+    />
+  </:footer>
+ </DModal>
+</template>

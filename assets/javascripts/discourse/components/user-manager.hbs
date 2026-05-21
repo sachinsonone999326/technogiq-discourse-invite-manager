@@ -1,0 +1,92 @@
+{{#if this.loading}}
+  <p>Loading users…</p>
+{{else}}
+  <table class="invite-grid">
+    <thead>
+      <tr>
+        <th>Request</th>
+        <th>Registration date</th>
+        <th>Description</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Invite URL</th>
+        <th>Expiry Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each this.invites as |invite|}}
+        <tr>
+          <td>{{invite.user_id}}</td>
+          <td>{{this.formatInviteDate invite.registration_date}}</td>
+          <td>{{invite.description}}</td>
+          <td>{{invite.username}}</td>
+          <td>{{invite.email}}</td>
+          <td class="mono">{{this.baseUrl}}/invites/{{invite.invite_key}}</td>
+          <td>{{this.formatInviteDateWithoutTime invite.expiration_date}}</td>
+          <td class="actions">
+          
+           <DMenu
+      @identifier="view-invites-menu"
+      @icon="ellipsis"
+      class="btn-flat more-button"
+      @autofocus={{true}}
+    >
+      <DropdownMenu as |dropdown|>
+        <dropdown.item>
+          <DButton
+            @action={{this.ExtendMembership invite}}
+            @label="extend_membership"
+            class="btn-transparent unassign-btn"
+          />
+        </dropdown.item>
+        <dropdown.item>
+          <DButton
+            @action={{this.EditMetadata invite}}
+            @label="edit_metadata"
+            class="btn-transparent edit-assignment-btn"
+          />
+        </dropdown.item>
+      </DropdownMenu>
+    </DMenu>
+           </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!--<div class="pagination-controls">
+    <button
+      class="btn"
+      disabled={{eq this.page 1}}
+      {{on "click" this.prevPage}}
+    >
+      ◀ Prev
+    </button>
+
+    <span>
+      Page {{this.page}} of {{this.totalPages}}
+    </span>
+
+    <button
+      class="btn"
+      disabled={{eq this.page this.totalPages}}
+      {{on "click" this.nextPage}}
+    >
+      Next ▶
+    </button>
+  </div>-->
+{{/if}}
+
+<style>
+.mono {
+    font-family: monospace;
+    background: #fbfdff;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: inline-block;
+    word-break: break-all;
+}
+</style>

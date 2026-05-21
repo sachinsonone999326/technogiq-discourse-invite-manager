@@ -1,0 +1,21 @@
+{{#if this.expiryDate}}
+
+ <div class="control-group pref-email" data-setting-name="membership-expiry-date">
+    <label class="control-label"><font dir="auto" style="vertical-align: inherit;">
+       <font dir="auto" style="vertical-align: inherit;">Membership Expiry Date</font></font></label>
+        <div class="membership-expiry-date">
+            <div class="row">
+              <div class="email-first"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> 
+                 {{this.expiryDate}}
+                </font></font>
+              </div>
+              
+               <button class="btn btn-default feature-topic-on-profile-btn" type="button">
+<span class="d-button-label">Renew Membership</span>
+
+</button>
+       </div>              
+      </div>
+     
+  </div>
+{{/if}}

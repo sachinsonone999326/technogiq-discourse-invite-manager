@@ -1,0 +1,224 @@
+<template>
+  <DModal
+    @title="Edit metadata - {{inviteDetails.username}}"
+    @closeModal={{@closeModal}}
+    @inline={{@inline}}
+    class="extend-membership-modal"
+  >
+    {{#if this.successMessage}}
+         <div class="alert alert-success">
+         {{this.successMessage}}
+         <br />
+
+        </div>
+       {{/if}}
+
+       {{#if this.errorMessage}}
+        <div class="alert alert-error">
+         {{this.errorMessage}}
+        </div>
+       {{/if}}
+
+     <Form @data={{this.initialData}} @onSubmit={{this.save}} as |form data|>
+     {{#if this.hideform}}
+      <body>
+       <div class="extend-membership-wrapper">
+
+        <div class="section">
+
+          <div class="section-body">
+
+            <div class="row">
+              <div class="label">
+                Metadata <form.Button
+                           @label="Add_metadata"
+                           @action={{fn this.addMetadata2}}
+                         />
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+        <div class="section">
+
+          <div class="section-body">
+
+            <div class="radio-row">
+
+             {{#each this.localMetadata as |pair index|}}
+                 <form.Container class="invite-metadata-row">
+                   <input
+                      type="text"
+                      class="input"
+                      placeholder="Key"
+          
+                      value={{pair.key}}
+                      {{on "input" (fn this.updateMetadata2  index "key")}}
+                    />
+
+        
+
+                   <textarea
+                    class="input"
+                    rows="1"
+                    {{on "input" (fn this.updateMetadata2 index "value")}}
+                    >{{pair.value}}</textarea>
+
+       
+
+                   <form.Button
+                    class="btn-danger"
+                    @label="Remove"
+                    @action={{fn this.removeMetadata2  index}}
+                   />
+                  </form.Container>
+                 {{/each}}
+
+
+          </div>
+
+        </div>
+
+
+        </div>
+
+      </div>
+    </body>
+   {{/if}}
+    <footer>
+    <div class="modal-footer-buttons">
+      <DButton
+        @label="cancel"
+        @action={{@closeModal}}
+        class="btn-default"
+      />
+
+      {{#if this.hideform}}
+      <form.Actions>
+        <form.Submit
+        @label="save"
+        @disabled={{this.isSaving}}
+        />
+       </form.Actions>
+       {{/if}}
+    </div>
+    </footer>
+</Form>
+  </DModal>
+</template>
+
+<style>
+.extend-membership-wrapper {
+  padding: 16px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--primary-low);
+  padding-bottom: 6px;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.label {
+  width: 220px;
+  font-weight: 700;
+  font-size: 14px;
+  color:  #646464;
+}
+
+.value {
+  flex: 1;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.radio-row {
+  margin-bottom: 10px;
+}
+
+.radio-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inline-fields {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.small-input {
+  width: 120px;
+}
+
+.input {
+  width: 100%;
+}
+
+.muted-text {
+  font-size: 13px;
+  color: var(--primary-medium);
+}
+
+
+.modal-footer-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-footer-buttons .form-kit__actions {
+  margin: 0;
+  display: flex;
+}
+
+.modal-footer-buttons .form-kit__actions-content {
+  display: flex;
+}
+
+footer{
+width:100%
+}
+
+.btn-default {
+ float: left;
+}
+
+.modal-footer-buttons .form-kit__actions {
+ float: left;
+ width: 50%;
+ margin-left: 20px;
+}
+
+</style>

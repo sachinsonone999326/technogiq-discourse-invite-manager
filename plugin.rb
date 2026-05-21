@@ -23,6 +23,7 @@ require_relative "app/models/invite_metadata"
 #register_asset 'admin/addon/controllers/invite-manager.js', :admin
 #register_asset 'admin/addon/templates/invite-manager.hbs', :admin
 
+register_asset 'stylesheets/technogiq-invite-manager.scss'
 
 after_initialize do
   User.register_custom_field_type 'admin_plan_type', :string
@@ -137,11 +138,15 @@ after_initialize do
       start_date + value.days
     when "monthly"
       start_date + value.months
+    when "months"
+      start_date + value.months
     when "quarterly"
       start_date + (value * 3).months
     when "half-yearly"
       start_date + (value * 6).months
     when "yearly"
+      start_date + value.years
+    when "years"
       start_date + value.years
     else
       nil

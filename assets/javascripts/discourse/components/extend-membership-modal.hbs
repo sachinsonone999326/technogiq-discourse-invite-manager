@@ -1,0 +1,356 @@
+<template>
+  <DModal
+    @title="Extend Membership - {{inviteDetails.username}}"
+    @closeModal={{@closeModal}}
+    @inline={{@inline}}
+    class="extend-membership-modal"
+  >
+    {{#if this.successMessage}}
+         <div class="alert alert-success">
+         {{this.successMessage}}
+         <br />
+
+        </div>
+       {{/if}}
+
+       {{#if this.errorMessage}}
+        <div class="alert alert-error">
+         {{this.errorMessage}}
+        </div>
+       {{/if}}
+
+     <Form @data={{this.initialData}} @onSubmit={{this.save}} as |form data|>
+     {{#if this.hideform}}
+      <body>
+       <div class="extend-membership-wrapper">
+
+        <div class="section">
+
+          <div class="section-body">
+
+            <div class="row">
+              <div class="label">
+                Current expiry date
+              </div>
+
+              <div class="label">
+                {{this.formatInviteDateWithoutTime inviteDetails.expiration_date}}
+              </div>
+            </div>
+
+            {{#if this.extendByDuration}}
+
+              <div class="row">
+                <div class="label">
+                  New expiry date
+                </div>
+
+                <div class="label">
+                  {{this.formatInviteDateWithoutTime this.newExpiryDate}}
+                </div>
+              </div>
+
+            {{/if}}
+
+          </div>
+
+        </div>
+
+        <div class="section">
+        {{#if extendByDate}}
+          <div class="section-header">
+            Extend to a specific date — choose a date to set the membership expiry.
+          </div> 
+        {{/if}}
+         
+        {{#if extendByDuration}}
+          <div class="section-header">
+           Extend by duration — add time to the current expiry date.
+          </div>
+        {{/if}}
+
+          <div class="section-body">
+
+            <div class="radio-row">
+
+              <label class="radio-label">
+
+                <Input
+                  @type="radio"
+                  name="extend-mode"
+                  @checked={{eq this.selectedMode "date"}}
+                  {{on "change" (fn this.changeExtendModebyDate )}}
+                />
+
+                Extend to a specific date
+
+              </label>
+
+            </div>
+
+            {{#if extendByDate}}
+
+              <div class="form-row">
+
+
+                 <form.Field
+                     @name="expiration_date"
+                     @title="Select date"
+                     @validation="required"
+                     as |field|
+                     >
+                        <field.Input @type="date" />
+                 </form.Field>
+              </div>
+
+              <div class="muted-text">
+                The membership will expire on the selected date.
+              </div>
+
+            {{/if}}
+
+            <div class="radio-row">
+
+              <label class="radio-label">
+
+                <Input
+                  @type="radio"
+                  name="extend-mode"
+                  @checked={{eq this.selectedMode "duration"}}
+                  {{on "change" (fn this.changeExtendMode)}}
+                />
+
+                Extend by duration
+
+              </label>
+
+            </div>
+
+            {{#if extendByDuration}}
+
+              <div class="form-row">
+
+
+                <div class="inline-fields">
+
+                  <form.Field
+                    @name="membership_duration_value"
+                    @title="Duration"
+                    @validation="required"
+                    as |field|
+                    >
+                   <field.Input @type="number" min="1" {{on "input" this.updateDuration}} />
+                  </form.Field>
+
+
+                    <form.Field
+                      @name="plan_type"
+                      @title="&nbsp;"
+                      @validation="required"
+                       as |field|
+                      >
+                      <field.Select {{on "change" (fn this.updatePlanType)}} as |select|>
+                      {{#each this.planTypeOptions as |option|}}
+                       <select.Option @value={{option.id}}>
+                        {{option.name}}
+                      </select.Option>
+                      {{/each}}
+                    </field.Select>
+                   </form.Field>
+                </div>
+
+              </div>
+
+              <div class="muted-text">
+                Time will be added to the current expiry date.
+              </div>
+
+            {{/if}}
+
+          </div>
+
+        </div>
+
+        <div class="section">
+
+          <div class="section-header">
+            Allowed Renewal Period
+          </div>
+
+          <div class="section-body">
+
+            <div class="form-row">
+
+
+              <div class="inline-fields">
+
+                <form.Field
+                   @name="renewal_period_value"
+                   @title="Period"
+                   @validation="required"
+                    as |field|
+                   >
+                  <field.Input @type="number" min="1" />
+                </form.Field>
+ 
+                 <form.Field
+                   @name="renewal_period"
+                   @title="&nbsp;"
+                   @validation="required"
+                   as |field|
+                   >
+                   <field.Select as |select|>
+                    {{#each this.renewalPeriodOptions as |option|}}
+                     <select.Option @value={{option.id}}>
+                      {{option.name}}
+                     </select.Option>
+                    {{/each}}
+                   </field.Select>
+                 </form.Field>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </body>
+   {{/if}}
+    <footer>
+    <div class="modal-footer-buttons">
+      <DButton
+        @label="cancel"
+        @action={{@closeModal}}
+        class="btn-default"
+      />
+
+      {{#if this.hideform}}
+      <form.Actions>
+        <form.Submit
+        @label="save"
+        @disabled={{this.isSaving}}
+        />
+       </form.Actions>
+       {{/if}}
+    </div>
+    </footer>
+</Form>
+  </DModal>
+</template>
+
+<style>
+.extend-membership-wrapper {
+  padding: 16px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--primary-low);
+  padding-bottom: 6px;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.label {
+  width: 220px;
+  font-weight: 700;
+  font-size: 14px;
+  color:  #646464;
+}
+
+.value {
+  flex: 1;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.radio-row {
+  margin-bottom: 10px;
+}
+
+.radio-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inline-fields {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.small-input {
+  width: 120px;
+}
+
+.input {
+  width: 100%;
+}
+
+.muted-text {
+  font-size: 13px;
+  color: var(--primary-medium);
+}
+
+
+.modal-footer-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-footer-buttons .form-kit__actions {
+  margin: 0;
+  display: flex;
+}
+
+.modal-footer-buttons .form-kit__actions-content {
+  display: flex;
+}
+
+footer{
+width:100%
+}
+
+.btn-default {
+ float: left;
+}
+
+.modal-footer-buttons .form-kit__actions {
+ float: left;
+ width: 50%;
+ margin-left: 20px;
+}
+
+</style>
+
+

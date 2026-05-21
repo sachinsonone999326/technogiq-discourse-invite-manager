@@ -17,6 +17,11 @@ en:
       manageinvites: "Manager Invites"
     Remove: "Remove"
     Add_metadata: "Add metadata"
+    View_invites: "View invites"
+    View_details: "View details"
+    extend_membership: "Extend membership"
+    edit_metadata: "Edit metadata"
+    Close: "Close"  
   technogiq_invites:
     add: "Create Invite"
     create: "Create"
