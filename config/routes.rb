@@ -11,6 +11,7 @@ TechnogiqDiscourseModule::Engine.routes.draw do
   get "/datamanageusers" => "invite_manager#datamanageusers"
   
   get "/datamanageusersbyid" => "invite_manager#datamanageusersbyid"
+  get "/getuserbyid" => "invite_manager#getuserbyid"
   post "/updateExpiryDate" => "invite_manager#extendmembershipupdate"
   post "/editmetadata" => "invite_manager#editmetadata"
 
