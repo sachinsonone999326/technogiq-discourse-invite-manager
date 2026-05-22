@@ -324,6 +324,40 @@ module ::TechnogiqDiscourseModule
       }
      }
     end
+    
+    
+    def getuserbyid
+
+      invite_id = params[:id]
+
+      
+      invites = UserInviteum
+                 .joins("JOIN users u ON u.id = user_invited.user_id")
+                 .joins("LEFT JOIN user_emails ue ON ue.user_id = u.id AND ue.primary = true")
+                 .joins("LEFT JOIN invites i ON i.id = user_invited.invite_id")
+                 .select("user_invited.*,
+                          u.username,
+                          u.created_at AS registration_date,
+                          ue.email,
+                          i.description,
+                          i.invite_key,
+                          i.created_at AS invite_created_at")
+                 .where("user_invited.id = ?", params[:id])
+                 .order("user_invited.created_at DESC")
+
+
+      render json: {invites: invites.map { |invite|
+      {
+        id: invite.id,
+        user_id: invite.user_id,
+        is_expiry_date: invite.is_expiry_date,
+        expiration_date: invite.expiration_date,
+        invite: invite,
+        username: invite.username
+       }
+      }
+     }
+    end
 
 
     def create
@@ -585,6 +619,19 @@ module ::TechnogiqDiscourseModule
        is_batch_mode: invite.metadata["is_batch_mode"],
        membership_expiration_date: invite.expiration_date,
        metadata: custom_metadata,
+       status: case
+         when invite.expires_at.present? &&
+              invite.expires_at < Time.now
+              "expired"
+
+         when invite.max_redemptions_allowed.present? &&
+              invite.redemption_count >=
+              invite.max_redemptions_allowed
+              "completed"
+
+         else
+              "pending"
+         end,
        invites_url: invites_data.map{ |u| { url: "#{Discourse.base_url}/invites/#{u.invite_key}" } },
        groups: invite.groups.map { |g| { id: g.id, name: g.name } },
        topics: invite.topics.map { |t| { id: t.id, title: t.title } }
