@@ -41,80 +41,63 @@ module ::TechnogiqDiscourseModule
 
       offset = (page - 1) * per_page
 
-      #invites_data = InviteMetadata
-      #   .from(
-      #          InviteMetadata
-      #           .select("DISTINCT ON (invite_metadata.uniqueid) invite_metadata.*, invites.description")
-      #           .joins("JOIN invites ON invites.id = invite_metadata.invite_id")
-      #           .order("invite_metadata.uniqueid, invite_metadata.created_at DESC"),
-      #            :invite_metadata
-      #         )
-      #  .order("invite_metadata.created_at DESC")
-      invites_data = InviteMetadata
-  .from(
-    InviteMetadata
-      .select("
-        DISTINCT ON (invite_metadata.uniqueid)
-        invite_metadata.*,
-        invites.description,
-        invites.redemption_count,
-        invites.max_redemptions_allowed,
-        invites.expires_at
-      ")
+      invites_data = InviteBatch
       .joins("
-        JOIN invites
-        ON invites.id = invite_metadata.invite_id
+        LEFT JOIN invite_metadata
+          ON invite_metadata.batch_id = invite_batches.id
+        LEFT JOIN invites
+          ON invites.id = invite_metadata.invite_id
+
+        LEFT JOIN user_invited
+          ON user_invited.batch_id = invite_batches.id
       ")
-      .order("
-        invite_metadata.uniqueid,
-        invite_metadata.created_at DESC
-      "),
-    :invite_metadata
-  )
-  .select("
-    invite_metadata.*,
-    (
-      invite_metadata.max_redemptions_allowed
-      - invite_metadata.redemption_count
-    ) AS remaining_redemptions,
+      .select("
+        invite_batches.*,
+        COUNT(DISTINCT user_invited.invite_id) AS total_user_invites,
+        MAX(
+          CASE
+            WHEN invites.expires_at IS NOT NULL
+             AND invites.expires_at < NOW()
+            THEN 1
+            ELSE 0
+          END
+        ) AS is_expired,
 
-    CASE
-      WHEN (
-        invite_metadata.expires_at IS NOT NULL
-        AND invite_metadata.expires_at < NOW()
-      )
+        STRING_AGG(DISTINCT invites.description, ', ') AS description,
 
-      THEN 1
-      ELSE 0
-    END AS is_expired,
-    
-    CASE
-      WHEN (
-        invite_metadata.max_redemptions_allowed IS NOT NULL
+        STRING_AGG(CONCAT('#{Discourse.base_url}/invites/', invites.invite_key), ', ') AS invite_url,
 
-        AND invite_metadata.redemption_count >=
-            invite_metadata.max_redemptions_allowed
-      )
+        STRING_AGG(
+          DISTINCT (
+            SELECT STRING_AGG(g.name, ', ')
+            FROM invited_groups ig
+            JOIN groups g ON g.id = ig.group_id
+            WHERE ig.invite_id = invites.id
+          ),
+          ', '
+        ) AS group_names
+      ")
+      .group("invite_batches.id")
+      .order("invite_batches.batch_number DESC")
 
-      THEN 1
-      ELSE 0
-    END AS is_completed,
+      invites = invites_data.map do |batch|
 
+        total = batch.total_invites.to_i
+        redeemed = batch.total_user_invites.to_i
+        expired = batch.is_expired.to_i
 
-    (
-      SELECT STRING_AGG(g.name, ', ')
-      FROM invited_groups ig
-      JOIN groups g
-      ON g.id = ig.group_id
-      WHERE ig.invite_id = invite_metadata.invite_id
-    ) AS group_names
-  ")
-  .order("invite_metadata.created_at DESC")
- # .limit(per_page)
- # .offset(offset)
+        remaining = total - redeemed
+        remaining = 0 if remaining < 0
+
+        batch.attributes.merge(
+          "is_completed" => expired > 0 || remaining == 0,
+          "is_active" => expired == 0 && remaining > 0,
+          "remaining_invites" => remaining,
+        )
+      end
 
       render json: {
-        invites: invites_data.to_a,
+        invites: invites,
         meta: {
           total: 0
         }
@@ -123,13 +106,13 @@ module ::TechnogiqDiscourseModule
 
     def dataallinvitesurl
 
-      arguniqueid = params[:uniqueid]
+      batch_id = params[:batch_id]
      
 
       invites_data = InviteMetadata
           .select("invite_metadata.id, invites.invite_key ") 
           .joins("JOIN invites ON invites.id = invite_metadata.invite_id")
-          .where(uniqueid: arguniqueid)
+          .where(batch_id: batch_id)
           .order("invite_metadata.id DESC, invite_metadata.created_at DESC")
 
       
@@ -145,26 +128,45 @@ module ::TechnogiqDiscourseModule
 
     def datainvitedetails
 
-      invite_id = params[:invite_id]
+      batch_id = params[:batch_id]
 
-      invites = Invite
+      invite = Invite
        .joins("JOIN invite_metadata ON invite_metadata.invite_id = invites.id")
-       .select("invites.*, invite_metadata.metadata AS metadata")
-       .where("invite_metadata.invite_id = ?", params[:invite_id])
+       .select("invites.*, invite_metadata.metadata AS metadata, invite_metadata.membership_duration_value, 
+               invite_metadata.renewal_period, invite_metadata.renewal_period_value, invite_metadata.is_batch_mode, 
+               invite_metadata.number_of_invitations, invite_metadata.plan_type,
+               invite_metadata.is_expiry_date, invite_metadata.expiration_date")
+       .where("invite_metadata.batch_id = ?", params[:batch_id])
        .includes(:groups, :topics)
+       .first
 
-      render json: {invites: invites.map { |invite|
+      total_user_invites = UserInviteum.where(batch_id: params[:batch_id]).count
+
+      render json: {invite: 
       {
         id: invite.id,
         invite_key: invite.invite_key,
         description: invite.description,
         metadata: invite.metadata,
+        status: case
+          when invite.expires_at.present? &&
+              invite.expires_at < Time.now
+              "Disabled"
+
+          when total_user_invites == invite.number_of_invitations
+              "Disabled"
+
+          else
+              "Enabled"
+        end,
+        total_user_invites: total_user_invites,
+        total_user_remaining_invites: (invite.number_of_invitations - total_user_invites),
         invite: invite,
         groups: invite.groups.map { |g| { id: g.id, name: g.name } },
         topics: invite.topics.map { |t| { id: t.id, title: t.title } }
        }
       }
-     }
+     
     end
 
     
@@ -176,28 +178,8 @@ module ::TechnogiqDiscourseModule
 
       offset = (page - 1) * per_page
 
-     # base_query = InviteMetadata
-     #   .left_joins("LEFT JOIN user_invited ON user_invited.invite_id = invite_metadata.id")
-     #   .group("invite_metadata.id")
-
-
-      #total_count = InviteMetadata.count
-
-      invites_data = InviteMetadata
-          .select("*") # or .all
-          .order("created_at DESC")
-        #.select(
-        #  "invite_metadata.*,
-        #   COUNT(user_invited.id) AS subscriber_count"
-        #)
-        #.order("invite_metadata.created_at DESC")
-        #.limit(10)
-        #.offset(1)
-
-
       render json: {
         #invites: invites_data.map { |i| { id: 5 }},
-        invites: invites_data.to_a,
         meta: {
           total: 0
         }
@@ -267,6 +249,7 @@ module ::TechnogiqDiscourseModule
                           ue.email,
                           i.description,
                           i.invite_key,
+                          CONCAT('#{Discourse.base_url}/invites/', i.invite_key) AS invite_url,
                           i.created_at AS invite_created_at")
                  .order("user_invited.created_at DESC")
  
@@ -377,17 +360,45 @@ module ::TechnogiqDiscourseModule
       number_of_invitations = params[:number_of_invitations]
       is_batch_mode = params[:is_batch_mode]
 
+      description = description.to_s.strip
+
+      if description.length > 100
+        raise Discourse::InvalidParameters.new(
+              "Description cannot be longer than 100 characters."
+        )
+      end
+
+      # Renewal period validation
+      renewal_period = renewal_period.to_s
+      renewal_period_value = renewal_period_value.to_i
+
+      if renewal_period != "monthly"
+        if renewal_period_value != 1
+          raise Discourse::InvalidParameters.new(
+            "Allowed renewal period must be 1 unless the Renewal Period is Monthly."
+          )
+          
+        end
+
+        # Sanitize the value
+        renewal_period_value = 1
+      else
+        if renewal_period_value < 1
+          raise Discourse::InvalidParameters.new(
+            "Allowed renewal period must be at least 1 for Monthly renewal."
+          )
+          return
+        end
+      end
+
+      max_limit = SiteSetting.invite_link_max_redemptions_limit.to_i
+
+      if max_uses > max_limit
+        raise StandardError, "Maximum redemptions cannot exceed #{max_limit}."
+      end
+
       base_metadata = params[:metadata] || {}
-      enriched_metadata = base_metadata.merge({
-        plan_type: plan_type,
-        membership_duration_value: membership_duration_value,
-        renewal_period: renewal_period,
-        renewal_period_value: renewal_period_value,
-        is_batch_mode: is_batch_mode,
-        number_of_invitations: number_of_invitations,
-        expiration_date: expiration_date,
-        is_expiry_date: is_expiry_date,
-      })
+      
 
       expiry_date = (params[:expire_after].to_i).days.from_now
       number_of_invitations = is_batch_mode ? (number_of_invitations || 1).to_i : 1
@@ -408,6 +419,19 @@ module ::TechnogiqDiscourseModule
         token = SecureRandom.base58(12) # short + URL safe (Discourse style)
         break token unless InviteMetadata.exists?(uniqueid: token)
       end
+
+
+      batch_number = (InviteBatch.maximum(:batch_number) || 0) + 1
+
+      batch = InviteBatch.create!(
+            batch_number: batch_number,
+            created_by_id: current_user.id,
+            description: description,
+            expires_at: expiry_date,
+            total_invites: number_of_invitations,
+            redeemed_count: 0,
+            expired_count: 0
+      )
 
       ActiveRecord::Base.transaction do
         number_of_invitations.times do
@@ -444,13 +468,20 @@ module ::TechnogiqDiscourseModule
             end
           end
 
+          
+
           invite_metadata = InviteMetadata.create!(
             invite_id: invite.id,
+            batch_id: batch.id,
             is_expiry_date: is_expiry_date,
             expiration_date: is_expiry_date ? expiration_date : nil,
             plan_type: is_expiry_date ? nil : plan_type,
             membership_duration_value: is_expiry_date ? nil : membership_duration_value,
-            metadata: enriched_metadata,
+            metadata: base_metadata,
+            renewal_period: renewal_period,
+            renewal_period_value: renewal_period_value,
+            is_batch_mode: is_batch_mode,
+            number_of_invitations: number_of_invitations,
             uniqueid: uniquestring
           )
           created_invites << {
@@ -482,16 +513,63 @@ module ::TechnogiqDiscourseModule
       selectedMode = params[:selectedMode]
       id = params[:id]
       invite = UserInviteum.find_by(id: params[:id])
+
+      return render json: {
+        status: "error",
+        message: "Invite not found."
+      } unless invite
+
+      if selectedMode == "date"
+
+        if expiration_date.nil? || expiration_date.empty?
+          return render json: {
+            status: "error",
+            message: "Invalid expiration date."
+          }
+        end
+
+        expiry = Date.parse(expiration_date)
+
+        if expiry <= Date.current
+          return render json: {
+            status: "error",
+            message: "Expiration date must be greater than today's date."
+          }
+        end
+      
+      end
+
+      if renewal_period != "monthly"
+        if renewal_period_value != 1
+          
+          return render json: {
+            status: "error",
+            message: "Allowed renewal period must be 1 unless the Renewal Period is Monthly."
+          }
+        end
+
+        # Sanitize the value
+        renewal_period_value = 1
+      else
+        if renewal_period_value < 1
+          
+          return render json: {
+            status: "error",
+            message: "Allowed renewal period must be at least 1 for Monthly renewal."
+          }
+          
+        end
+      end
+
       
       if invite.present?
         if selectedMode == "date"
-          metadata = invite.metadata || {}
-          metadata["renewal_period_value"] = renewal_period_value
-          metadata["renewal_period"] =  renewal_period
+          
           invite.update(
             expiration_date: expiration_date,
             calculate_date: expiration_date,
-            metadata: metadata,
+            renewal_period_value: renewal_period_value,
+            renewal_period: renewal_period
            )
            render json: {
              status: "ok",
@@ -499,15 +577,13 @@ module ::TechnogiqDiscourseModule
         end
          
         if selectedMode == "duration"
-          metadata = invite.metadata || {}
-          metadata["renewal_period_value"] = renewal_period_value
-          metadata["renewal_period"] =  renewal_period
           invite.update(
             expiration_date: expiration_date,
             calculate_date: expiration_date,
             plan_type: plan_type,
             membership_duration_value: membership_duration_value,
-            metadata: metadata,
+            renewal_period_value: renewal_period_value,
+            renewal_period: renewal_period
             
            )
            
@@ -541,14 +617,6 @@ module ::TechnogiqDiscourseModule
       if invite.present?
         
         metadataold = invite.metadata || {}
-        metadata["is_batch_mode"] = metadataold["is_batch_mode"]
-        metadata["is_expiry_date"] = metadataold["is_expiry_date"]
-        metadata["renewal_period"] = metadataold["renewal_period"]
-        metadata["renewal_period_value"] = metadataold["renewal_period_value"]
-        metadata["expiration_date"] = metadataold["expiration_date"]
-        metadata["number_of_invitations"] = metadataold["number_of_invitations"]
-        metadata["membership_duration_value"] = metadataold["membership_duration_value"]
-        metadata["plan_type"] = metadataold["plan_type"]
         
         invite.update(
             metadata: metadata,
@@ -571,30 +639,25 @@ module ::TechnogiqDiscourseModule
        .joins("JOIN invite_metadata ON invite_metadata.invite_id = invites.id")
        .select("invites.*, invite_metadata.metadata AS metadata, invite_metadata.id AS invite_meta_id,
                invite_metadata.is_expiry_date,invite_metadata.plan_type, invite_metadata.membership_duration_value, 
-               invite_metadata.expiration_date, invite_metadata.uniqueid")
-       .where("invite_metadata.id = ?", params[:id])
+               invite_metadata.expiration_date, invite_metadata.uniqueid,invite_metadata.batch_id,
+               invite_metadata.is_batch_mode, invite_metadata.renewal_period, invite_metadata.renewal_period_value, invite_metadata.number_of_invitations")
+       .where("invite_metadata.batch_id = ?", params[:id])
        .includes(:groups, :topics)
        .first
 
+     total_user_invites = UserInviteum.where(batch_id: params[:id]).count
 
      invites_data = InviteMetadata
           .select("invite_metadata.id, invites.invite_key ")
           .joins("JOIN invites ON invites.id = invite_metadata.invite_id")
-          .where(uniqueid: invite.uniqueid)
+          .where(batch_id: params[:id])
           .order("invite_metadata.id DESC, invite_metadata.created_at DESC")
 
 
 
 
      excluded_keys = [
-      "is_batch_mode",
-      "is_expiry_date",
-      "renewal_period",
-      "renewal_period_value",
-      "expiration_date",
-      "number_of_invitations",
-      "membership_duration_value",
-      "plan_type"
+      
      ]
 
      custom_metadata =
@@ -613,24 +676,23 @@ module ::TechnogiqDiscourseModule
        is_expiry_date: invite.is_expiry_date,
        plan_type: invite.plan_type,
        membership_duration_value: invite.membership_duration_value, 
-       renewal_period: invite.metadata["renewal_period"],
-       renewal_period_value: invite.metadata["renewal_period_value"],
-       number_of_invitations: invite.metadata["number_of_invitations"],
-       is_batch_mode: invite.metadata["is_batch_mode"],
+       renewal_period: invite.renewal_period,
+       renewal_period_value: invite.renewal_period_value,
+       number_of_invitations: invite.number_of_invitations,
+       is_batch_mode: invite.is_batch_mode,
        membership_expiration_date: invite.expiration_date,
        metadata: custom_metadata,
+       total_user_invites: total_user_invites,
        status: case
          when invite.expires_at.present? &&
               invite.expires_at < Time.now
-              "expired"
+              "completed"
 
-         when invite.max_redemptions_allowed.present? &&
-              invite.redemption_count >=
-              invite.max_redemptions_allowed
+         when total_user_invites == invite.number_of_invitations
               "completed"
 
          else
-              "pending"
+              "active"
          end,
        invites_url: invites_data.map{ |u| { url: "#{Discourse.base_url}/invites/#{u.invite_key}" } },
        groups: invite.groups.map { |g| { id: g.id, name: g.name } },
@@ -640,7 +702,7 @@ module ::TechnogiqDiscourseModule
 
       send_data(
          JSON.pretty_generate(data.as_json),
-         filename: "invite-#{invite.invite_meta_id}.json",
+         filename: "invite-#{invite.batch_id}.json",
          type: "application/json"
       )
     end
