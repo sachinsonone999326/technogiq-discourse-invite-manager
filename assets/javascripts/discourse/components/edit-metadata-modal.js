@@ -19,6 +19,7 @@ export default class EditMetadataModal extends Component {
   @tracked hideform = true;
   @tracked isSaving = false;
   @tracked localMetadata = [{ key: "", value: "" }];
+  @tracked isMaximized = false;
 
  @tracked initialData = {
     
@@ -59,16 +60,7 @@ export default class EditMetadataModal extends Component {
   
  metadataList() {
   const metadata = this.metadata || {};
-  const excludedKeys = [
-    "is_batch_mode",
-    "is_expiry_date",
-    "renewal_period",
-    "expiration_date",
-    "renewal_period_value",
-    "number_of_invitations",
-    "membership_duration_value",
-    "plan_type"
-  ];
+  const excludedKeys = [];
   return Object.keys(metadata)
     .filter((key) => !excludedKeys.includes(key))
     .map((key) => ({
@@ -155,5 +147,10 @@ export default class EditMetadataModal extends Component {
       this.isSaving = false;
     }
   }
+
+  @action
+    toggleMaximize() {
+      this.isMaximized = !this.isMaximized;
+    }
 
 }

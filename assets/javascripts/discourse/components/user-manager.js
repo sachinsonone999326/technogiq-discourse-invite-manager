@@ -15,6 +15,7 @@ export default class UserManagerGrid extends Component {
   @tracked totalPages = 1;
   @tracked loading = false;
   @service modal;
+  @tracked searchTerm = "";
 
   constructor() {
     super(...arguments);
@@ -87,6 +88,57 @@ export default class UserManagerGrid extends Component {
 
   formatInviteDateWithoutTime(date) {
     return moment(date).format("DD MMM YYYY");
+  }
+
+  get filteredInvites() {
+
+    let invites = this.invites || [];
+
+    
+    // SEARCH FILTER
+
+    if (this.searchTerm) {
+
+      const term =
+        this.searchTerm.toLowerCase();
+
+      invites = invites.filter((i) => {
+
+        return (
+          String(i.batch_id)
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          (i.description || "")
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          (i.invite_url || "")
+            .toLowerCase()
+            .includes(term)
+
+            ||
+
+          (i.email || "")
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          (i.username || "")
+            .toLowerCase()
+            .includes(term)
+        );
+
+      });
+
+    }
+
+    return invites;
   }
 }
 

@@ -1,15 +1,19 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { service } from "@ember/service";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { debounce } from "@ember/runloop";
+import { siteSettings } from "discourse/lib/site-settings";
 
 export default class InviteManagerEditor extends Component {
   @tracked isSaving = false;
   @tracked successMessage = null;
   @tracked errorMessage = null;
   @tracked inviteUrl = null;
+  @tracked descriptionLength = 0;
+  @tracked renewalValue = 1;
   @tracked localMetadata = [{ key: "", value: "" }];
   @tracked planTypeOptions = [
   { id: "days", name: "Days" },
@@ -30,6 +34,11 @@ export default class InviteManagerEditor extends Component {
   { id: 36500, name: "36500 days" },
   { id: 999999, name: "Never" },
 ];
+
+  @service siteSettings;
+  //@tracked maxRedemption = this.siteSettings.invite_link_max_redemptions_limit;
+  //this.siteSettings.invite_link_max_redemptions_limit
+  //console.log(this.siteSettings.invite_link_max_redemptions_limit);
   initialData = {
     is_expiry_date: false,
     expiration_date: "",
@@ -71,6 +80,10 @@ export default class InviteManagerEditor extends Component {
   @action
   addMetadata(form, data) {
    form.set("metadata", [...data.metadata, { key: "", value: "" }]);
+  }
+
+  get maxRedemptionsAllowedLimit() {
+    return this.siteSettings.invite_link_max_redemptions_limit;
   }
 
   @action
@@ -180,6 +193,29 @@ export default class InviteManagerEditor extends Component {
       }
     });
     return result;
+  }
+
+  @action
+  renewalPeriodChanged(form, data, event) {
+    const value = event.target.value;
+    //console.log(value)
+    const input = document.querySelector("#control-renewal_period_value input");
+
+    
+    if (value !== "monthly") {
+       form.set("renewal_period_value", 1);
+       if (input) {
+        input.value = 1;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+       }
+
+      //data.renewal_period_value = 1;
+    }
+  }
+
+  @action
+  updateDescription(event) {
+    this.descriptionLength = event.target.value.length;
   }
 
   @action

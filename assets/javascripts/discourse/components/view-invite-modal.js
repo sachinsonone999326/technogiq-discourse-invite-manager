@@ -12,6 +12,8 @@ export default class ViewInviteModal extends Component {
   @tracked inviteDetails = [];
   @tracked model = [];
   @tracked baseUrl = "";
+  @tracked isMaximized = false;
+  @tracked copied = false;
 
   constructor() {
     super(...arguments);
@@ -25,7 +27,7 @@ export default class ViewInviteModal extends Component {
         "/technogiq-discourse-invite-manager/dataallinvitesurl",
         {
           data: {
-            uniqueid: this.args.model.uniqueid
+            batch_id: this.args.model.id
           }
         }
       );
@@ -39,6 +41,29 @@ export default class ViewInviteModal extends Component {
        console.log(this.inviteDetails.invites.length);
     }
   }
+
+  @action
+    copyToClipboard() {
+      this.copied = true;
+      const urls = this.inviteDetails.invites
+          .map(
+            (item) => `${this.inviteDetails.baseUrl}/invites/${item.invite_key}`
+          )
+          .join("\n");
+
+        navigator.clipboard.writeText(urls);
+
+        // Optional success message
+        this.flashMessages?.success("Invite URLs copied to clipboard.");
+        setTimeout(() => {
+          this.copied = false;
+        }, 1500); // 1.5 seconds
+    }
+
+    @action
+    toggleMaximize() {
+      this.isMaximized = !this.isMaximized;
+    }
 
 
 }

@@ -1,14 +1,27 @@
 <template>
     <DModal
-      @title="Invite details — request #{{model.id}}"
+      @title=""
       @closeModal={{@closeModal}}
       @inline={{@inline}}
-      class=""
+      class={{if this.isMaximized "fullscreen-modal"}}
     >
+
+    <:aboveHeader></:aboveHeader>
+          <:headerAboveTitle></:headerAboveTitle>
+          <:headerBelowTitle>
+          <div><h2>Invite details — request #{{model.id}}</h2></div>
+          <DButton
+          @icon={{if this.isMaximized "compress" "expand"}}
+          @action={{this.toggleMaximize}}
+          class="btn-flat btn-transparent modal-close"
+        /></:headerBelowTitle>
+          <:belowHeader></:belowHeader>
+
+
      <:body>
     
 <div class="invite-details-modal">
-
+      
       <div class="card">
         <h3>Invitation Details — Read-Only</h3>
 
@@ -19,12 +32,25 @@
 
             <div class="row">
               <div class="label">Description</div>
-              <div class="value">{{this.model.description}}</div>
+              <div class="value">
+                {{#if this.model.description}}
+                {{this.model.description}}
+                {{else}}
+                  -
+                {{/if}}
+              </div>
             </div>
 
             <div class="row">
               <div class="label">Restrict to</div>
-              <div class="value">{{this.inviteDetails.invite.domain}}{{this.inviteDetails.invite.email}}</div>
+              <div class="value">
+
+              {{if (or this.inviteDetails.invite.domain this.inviteDetails.invite.email)
+                (concat this.inviteDetails.invite.domain this.inviteDetails.invite.email)
+                "-"
+              }}
+
+              </div>
             </div>
 
             <div class="row">
@@ -40,12 +66,12 @@
             <div class="row">
               <div class="label">Arrive at topic</div>
               <div class="value">
-                {{#each this.inviteDetails.topics as |topic|}}
-                 
-                      {{topic.title}}, 
-                 
-                {{/each}}
-
+                
+                 {{#if this.topicNames}}
+                  {{this.topicNames}}
+                {{else}}
+                  -
+                {{/if}}
               </div>
             </div>
 
@@ -53,12 +79,11 @@
               <div class="label">Add to groups</div>
               <div class="value">
 
-               {{#each this.inviteDetails.groups as |group|}}
-                  
-                      {{group.name}}, 
-                 
-                {{/each}}
-
+                {{#if this.groupNames}}
+                  {{this.groupNames}}
+                {{else}}
+                  -
+                {{/if}}
             </div>
             </div>
 
@@ -73,8 +98,8 @@
             <div class="row">
               <div class="label">Membership expiration date</div>
               <div class="value">
-                    {{#if @model.metadata.is_expiry_date}}
-                                 {{this.formatInviteDateWithoutTime @model.metadata.expiration_date}}
+                    {{#if this.inviteDetails.invite.is_expiry_date}}
+                                 {{this.formatInviteDateWithoutTime this.inviteDetails.invite.expiration_date}}
                     {{else}}
                         -
                    {{/if}}
@@ -83,12 +108,18 @@
 
             <div class="row">
               <div class="label">Membership duration</div>
-              <div class="value">{{model.metadata.membership_duration_value}} {{model.metadata.plan_type}}</div>
+              <div class="value">
+             {{#if this.inviteDetails.invite.is_expiry_date}} 
+                 -
+             {{else}}
+              {{this.inviteDetails.invite.membership_duration_value}} {{this.inviteDetails.invite.plan_type}}
+              {{/if}}
+              </div>
             </div>
 
             <div class="row">
               <div class="label">Allowed renewal period</div>
-              <div class="value">{{model.metadata.renewal_period}} - {{model.metadata.renewal_period_value}}</div>
+              <div class="value">{{this.inviteDetails.invite.renewal_period}} - {{this.inviteDetails.invite.renewal_period_value}}</div>
             </div>
 
           </div>
@@ -100,11 +131,19 @@
           <div class="section-body">
             <div class="row">
               <div class="label">Status</div>
-              <div class="value">{{#if @model.metadata.is_batch_mode}}
-                      Enabled - {{@model.metadata.number_of_invitations}} invitations
-                      {{else}}
-                       Disabled
-               {{/if}}</div>
+             <div class="value">
+                {{#if (eq this.inviteDetails.status "Enabled")}}
+                  Enabled - {{this.inviteDetails.total_user_remaining_invites}} invitations
+                {{else}}
+                  Disabled
+                {{/if}}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">Total Invitations</div>
+              <div class="value">{{this.inviteDetails.invite.number_of_invitations}} invitations
+                </div>
             </div>
           </div>
         </div>
@@ -114,18 +153,18 @@
           <div class="section-header">Metadata (key → value)</div>
           <div class="section-body">
 
-            <table class="meta-table">
-              <tbody>
+            
+              
                 {{#each this.metadataList as |meta|}}
-                  <tr>
-                    <td class="key">{{meta.key}}</td>
-                    <td>
+                <div class="row">
+                  <div class="label">{{meta.key}}</div>
+                   <div class="value">
                       <code class="json">{{meta.value}}</code>
-                    </td>
-                  </tr>
+                    </div>
+                   </div>
                 {{/each}}
-              </tbody>
-            </table>
+              
+           
 
           </div>
         </div>
@@ -148,7 +187,7 @@
   padding-bottom: 5px;
 }
 
-.row {
+div.invite-details-modal .row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 6px;
@@ -176,7 +215,7 @@
   padding: 4px;
   display: block;
 }
-.row {
+div.invite-details-modal .row {
   display: flex;
   gap: 16px;
   margin-bottom: 10px;
@@ -200,6 +239,32 @@
 #  white-space: pre-wrap;
 }
 
+.fullscreen-modal {
+  width: 98vw !important;
+  max-width: 98vw !important;
+  height: 95vh !important;
+
+          --modal-max-width: 98vw !important;
+        --modal-width: 98vw !important;
+        --modal-min-width: 98vw !important;
+}
+
+.modal-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.d-modal__header{
+  justify-content: end!imporant;
+}
+
+.d-modal__header > div:first-child
+
+ {
+    flex: 1;
+}
+
 </style>
      </:body>
   <:footer>
@@ -208,6 +273,7 @@
       @action={{@closeModal}}
       class="btn-primary"
     />
+
   </:footer>
  </DModal>
 </template>

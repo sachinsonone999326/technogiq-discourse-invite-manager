@@ -1,117 +1,114 @@
 <template>
   <DModal
-    @title="Edit metadata - {{inviteDetails.username}}"
+    @title=""
     @closeModal={{@closeModal}}
     @inline={{@inline}}
-    class="extend-membership-modal"
+    class={{if this.isMaximized "fullscreen-modal"}}
   >
-    {{#if this.successMessage}}
-         <div class="alert alert-success">
-         {{this.successMessage}}
-         <br />
 
+  <:aboveHeader></:aboveHeader>
+          <:headerAboveTitle></:headerAboveTitle>
+          <:headerBelowTitle>
+          <div><h2>Edit metadata - {{this.inviteDetails.username}}</h2></div>
+          <DButton
+          @icon={{if this.isMaximized "compress" "expand"}}
+          @action={{this.toggleMaximize}}
+          class="btn-flat btn-transparent modal-close"
+        /></:headerBelowTitle>
+          <:belowHeader></:belowHeader>
+
+    <:body>
+
+      {{#if this.successMessage}}
+        <div class="alert alert-success">
+          {{this.successMessage}}
         </div>
-       {{/if}}
+      {{/if}}
 
-       {{#if this.errorMessage}}
+      {{#if this.errorMessage}}
         <div class="alert alert-error">
-         {{this.errorMessage}}
+          {{this.errorMessage}}
         </div>
-       {{/if}}
+      {{/if}}
 
-     <Form @data={{this.initialData}} @onSubmit={{this.save}} as |form data|>
-     {{#if this.hideform}}
-      <body>
-       <div class="extend-membership-wrapper">
+      
 
-        <div class="section">
+      <Form
+        @data={{this.initialData}}
+        @onSubmit={{this.save}}
+        as |form data|
+      >
 
-          <div class="section-body">
+        {{#if this.hideform}}
 
-            <div class="row">
-              <div class="label">
-                Metadata <form.Button
-                           @label="Add_metadata"
-                           @action={{fn this.addMetadata2}}
-                         />
+          <div class="extend-membership-wrapper">
+
+            <div class="section">
+
+              <div class="section-body">
+
+                <div class="row">
+                  <div class="label">
+                    Metadata
+
+                    <form.Button
+                      @label="Add_metadata"
+                      @action={{this.addMetadata2}}
+                    />
+                  </div>
+                </div>
+
               </div>
 
             </div>
 
+            <div class="section">
+
+              <div class="section-body">
+
+                <div class="radio-row">
+
+                  {{#each this.localMetadata as |pair index|}}
+
+                    <form.Container class="invite-metadata-row">
+
+                      <input
+                        type="text"
+                        class="input"
+                        placeholder="Key"
+                        value={{pair.key}}
+                        {{on "input" (fn this.updateMetadata2 index "key")}}
+                      />
+
+                      <textarea
+                        class="input"
+                        rows="1"
+                        {{on "input" (fn this.updateMetadata2 index "value")}}
+                      >{{pair.value}}</textarea>
+
+                      <form.Button
+                        class="btn-danger"
+                        @label="Remove"
+                        @action={{fn this.removeMetadata2 index}}
+                      />
+
+                    </form.Container>
+
+                  {{/each}}
+
+                </div>
+
+              </div>
+
+            </div>
 
           </div>
 
-        </div>
+        {{/if}}
 
-        <div class="section">
+      </Form>
 
-          <div class="section-body">
-
-            <div class="radio-row">
-
-             {{#each this.localMetadata as |pair index|}}
-                 <form.Container class="invite-metadata-row">
-                   <input
-                      type="text"
-                      class="input"
-                      placeholder="Key"
-          
-                      value={{pair.key}}
-                      {{on "input" (fn this.updateMetadata2  index "key")}}
-                    />
-
-        
-
-                   <textarea
-                    class="input"
-                    rows="1"
-                    {{on "input" (fn this.updateMetadata2 index "value")}}
-                    >{{pair.value}}</textarea>
-
-       
-
-                   <form.Button
-                    class="btn-danger"
-                    @label="Remove"
-                    @action={{fn this.removeMetadata2  index}}
-                   />
-                  </form.Container>
-                 {{/each}}
-
-
-          </div>
-
-        </div>
-
-
-        </div>
-
-      </div>
-    </body>
-   {{/if}}
-    <footer>
-    <div class="modal-footer-buttons">
-      <DButton
-        @label="cancel"
-        @action={{@closeModal}}
-        class="btn-default"
-      />
-
-      {{#if this.hideform}}
-      <form.Actions>
-        <form.Submit
-        @label="save"
-        @disabled={{this.isSaving}}
-        />
-       </form.Actions>
-       {{/if}}
-    </div>
-    </footer>
-</Form>
-  </DModal>
-</template>
-
-<style>
+      <style>
 .extend-membership-wrapper {
   padding: 16px;
 }
@@ -226,4 +223,60 @@ width:100%
 }
 
 textarea{resize: vertical;}
+
+.fullscreen-modal {
+  width: 98vw !important;
+  max-width: 98vw !important;
+  height: 95vh !important;
+
+          --modal-max-width: 98vw !important;
+        --modal-width: 98vw !important;
+        --modal-min-width: 98vw !important;
+}
+
+.modal-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.d-modal__header{
+  justify-content: end!imporant;
+}
+
+.d-modal__header > div:first-child
+
+ {
+    flex: 1;
+}
 </style>
+
+    </:body>
+
+    <:footer>
+
+      <div class="modal-footer-buttons">
+
+        <DButton
+          @label="cancel"
+          @action={{@closeModal}}
+          class="btn-default"
+        />
+
+        {{#if this.hideform}}
+
+          <DButton
+            @label="save"
+            @action={{this.save}}
+            @disabled={{this.isSaving}}
+            class="btn-primary"
+          />
+
+        {{/if}}
+
+      </div>
+
+    </:footer>
+
+  </DModal>
+</template>

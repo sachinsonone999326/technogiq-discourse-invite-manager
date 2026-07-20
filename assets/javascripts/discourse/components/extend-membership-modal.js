@@ -21,6 +21,7 @@ export default class ExtendMembershipModal extends Component {
   @tracked extendByDate = false;  
   @tracked selectedMode = null;
   @tracked hideform = true;
+  @tracked isMaximized = false;
   @tracked planTypeOptions = [
   { id: "days", name: "Days" },
   { id: "months", name: "Months" },
@@ -66,7 +67,7 @@ export default class ExtendMembershipModal extends Component {
       );
 
       this.inviteDetails = response.invites[0]; // adjust based on API
-      this.metadata = this.inviteDetails.invite.metadata;
+      this.metadata = this.inviteDetails.invite;
  
       this.initialData = {
                is_expiry_date: false,
@@ -108,14 +109,6 @@ export default class ExtendMembershipModal extends Component {
   get metadataList() {
   const metadata = this.args.model.invite.metadata || {};
   const excludedKeys = [
-    "is_batch_mode",
-    "is_expiry_date",
-    "renewal_period",
-    "expiration_date",
-    "renewal_period_value",
-    "number_of_invitations",
-    "membership_duration_value",
-    "plan_type"
   ];
   return Object.keys(metadata)
     .filter((key) => !excludedKeys.includes(key))
@@ -177,7 +170,7 @@ updatePlanType(value) {
 }
 
  @action
-  async save(data) {
+  async save(data) {  console.log(data)
     this.isSaving = true;
     this.successMessage = null;
     this.errorMessage = null;
@@ -187,6 +180,21 @@ updatePlanType(value) {
       const payload = {};
         
       if (this.selectedMode == "date") {
+        const selectedDate = moment(data.expiration_date, "YYYY-MM-DD");
+        const today = moment().startOf("day");
+
+        if (!selectedDate.isValid()) {
+          this.errorMessage = "Please select a valid expiration date.";
+          this.isSaving = false;
+          return;
+        }
+
+        if (selectedDate.isSameOrBefore(today)) {
+          this.errorMessage =
+            "Expiration date must be greater than today's date.";
+          this.isSaving = false;
+          return;
+        }
         payload.expiration_date = data.expiration_date;
       } else {
         payload.plan_type = data.plan_type;
@@ -225,6 +233,38 @@ updatePlanType(value) {
     } finally {
       this.isSaving = false;
     }
+  }
+
+  @action
+    toggleMaximize() {
+      this.isMaximized = !this.isMaximized;
+    }
+
+  get minExpiryDate() {
+    return moment().add(1, "day").format("YYYY-MM-DD");
+  }
+
+  @action
+  renewalPeriodChanged(form, data, event) {
+    const value = event.target.value;
+    //console.log(value)
+    const input = document.querySelector("#control-renewal_period_value input");
+
+    
+    if (value !== "monthly") {
+       form.set("renewal_period_value", 1);
+       if (input) {
+        input.value = 1;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+       }
+
+      //data.renewal_period_value = 1;
+    }
+  }
+
+  @action
+  submitForm() {
+    document.getElementById("hidden-submit-btn")?.click();
   }
 
 }

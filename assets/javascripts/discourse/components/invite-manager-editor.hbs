@@ -21,8 +21,13 @@
               @validation={{this.descriptionValidation}}
               as |field|
             >
-       <field.Textarea maxlength="100" />
+     
+       <field.Textarea maxlength="100" {{on "input" this.updateDescription}}/>
   </form.Field>
+  <div class="description-counter">
+    {{this.descriptionLength}} / 100
+  </div>
+  
   <form.Field
               @name="restrict_to"
               @title={{i18n "user.invited.invite.restrict"}}
@@ -40,15 +45,14 @@
   <form.Field
                 @name="max_uses"
                 @title={{i18n "user.invited.invite.max_redemptions_allowed"}}
-                @type="number"
                 @format="small"
                 @validation="required"
                 as |field|
               >
                 <field.Input
-                  type="number"
+                  @type="number"
                   min="1"
-                  max={{this.siteSettings.invite_link_max_redemptions_limit_users}}
+                  max="{{this.maxRedemptionsAllowedLimit}}"
                 />
   </form.Field>
 
@@ -129,7 +133,7 @@
 
       <form.Field
       @name="plan_type"
-      @title="-"
+      @title="&nbsp;"
       @validation="required"
       as |field|
     >
@@ -152,6 +156,8 @@
     <form.Field
       @name="renewal_period_value"
       @title="Allowed renewal period"
+      @disabled={{not (eq data.renewal_period "monthly")}}
+      
       @validation="required"
       as |field|
     >
@@ -164,7 +170,7 @@
       @validation="required"
       as |field|
     >
-      <field.Select as |select|>
+      <field.Select  {{on "change" (fn this.renewalPeriodChanged form data)}} as |select|>
        {{#each this.renewalPeriodOptions as |option|}}
          <select.Option @value={{option.id}}>
           {{option.name}}
@@ -246,5 +252,44 @@ textarea{resize: vertical;}
 {
   width: auto;
 }
+
+.description-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.description-wrapper textarea {
+  width: 100%;
+  padding-bottom: 24px; /* Prevent text from overlapping the counter */
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.description-counter {
+  
+  bottom: 8px;
+  right: 10px;
+  font-size: 12px;
+  
+  background: var(--secondary);
+  
+  pointer-events: none;
+  line-height: 1;
+}
+
+#control-is_expiry_date label.form-kit__container-title{
+  display:none;
+}
+#control-is_expiry_date label.form-kit__control-checkbox-label span{
+ font-weight: 600;
+ }
+
+ #control-is_batch_mode label.form-kit__container-title{
+  display:none;
+}
+#control-is_batch_mode label.form-kit__control-checkbox-label span{
+ font-weight: 600;
+ }
 </style>
 </Form>

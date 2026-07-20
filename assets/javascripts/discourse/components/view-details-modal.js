@@ -14,6 +14,7 @@ export default class ViewDetailsModal extends Component {
   @tracked model = [];
   @tracked metadata = [];
   @tracked baseUrl = "";  
+  @tracked isMaximized = false;
 
 
  constructor() {
@@ -28,12 +29,12 @@ export default class ViewDetailsModal extends Component {
         "/technogiq-discourse-invite-manager/datainvitedetails",
         {
           data: {
-            invite_id: this.args.model.invite_id
+            batch_id: this.args.model.id
           }
         }
       );
 
-      this.inviteDetails = response.invites[0]; // adjust based on API
+      this.inviteDetails = response.invite; // adjust based on API
      
     } catch (e) {
       console.error("API error:", e);
@@ -52,16 +53,9 @@ export default class ViewDetailsModal extends Component {
   }
   
   get metadataList() {
-  const metadata = this.args.model.metadata || {};
+  const metadata = this.inviteDetails.metadata || {};
   const excludedKeys = [
-    "is_batch_mode",
-    "is_expiry_date",
-    "renewal_period",
-    "expiration_date",
-    "renewal_period_value",
-    "number_of_invitations",
-    "membership_duration_value",
-    "plan_type"
+    
   ];
   return Object.keys(metadata)
     .filter((key) => !excludedKeys.includes(key))
@@ -69,6 +63,23 @@ export default class ViewDetailsModal extends Component {
       key,
       value: metadata[key]
     }));
+}
+
+get topicNames() {
+  return (this.inviteDetails?.topics || [])
+    .map(t => t.title)
+    .join(", ");
+}
+
+get groupNames() {
+  return (this.inviteDetails?.groups || [])
+    .map(t => t.name)
+    .join(", ");
+}
+
+@action
+toggleMaximize() {
+  this.isMaximized = !this.isMaximized;
 }
 
 }

@@ -79,27 +79,27 @@ export default class InviteManagerGrid extends Component {
 
   getRedeemedPercentage(invite) {
 
-    if (!invite.max_redemptions_allowed) {
+    if (!invite.total_user_invites) {
       return 0;
     }
 
     return (
-      invite.redemption_count
+      invite.total_user_invites
       /
-      invite.max_redemptions_allowed
+      invite.total_invites
     ) * 100;
   }
 
   getRemainingPercentage(invite) {
 
-    if (!invite.max_redemptions_allowed) {
+    if (!invite.total_user_invites) {
       return 0;
     }
 
     return (
-      invite.remaining_redemptions
+      (invite.remaining_invites)
       /
-      invite.max_redemptions_allowed
+      invite.total_invites
     ) * 100;
   }
 
@@ -111,17 +111,13 @@ export default class InviteManagerGrid extends Component {
 
   if (this.activeTab === "active") {
 
-    invites = invites.filter(
-      (i) => !i.is_expired
-    );
+    invites = invites.filter((i) => i.is_active);
 
   }
 
   if (this.activeTab === "completed") {
 
-    invites = invites.filter(
-      (i) => i.is_completed
-    );
+    invites = invites.filter((i) => i.is_completed);
 
   }
 
@@ -142,6 +138,12 @@ export default class InviteManagerGrid extends Component {
         ||
 
         (i.description || "")
+          .toLowerCase()
+          .includes(term)
+
+        ||
+
+        (i.invite_url || "")
           .toLowerCase()
           .includes(term)
 

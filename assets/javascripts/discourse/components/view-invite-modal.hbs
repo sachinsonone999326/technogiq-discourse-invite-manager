@@ -1,10 +1,31 @@
 <template>
     <DModal
-      @title="Invitations for request #{{model.id}} — {{this.inviteDetails.invites.length}} item(s)"
+      @title=""
       @closeModal={{@closeModal}}
       @inline={{@inline}}
-      class=""
+      class={{if this.isMaximized "fullscreen-modal"}}
     >
+
+
+    <:aboveHeader></:aboveHeader>
+          <:headerAboveTitle></:headerAboveTitle>
+          <:headerBelowTitle>
+          <div><h2>Invitations for request #{{model.id}} — {{this.inviteDetails.invites.length}} item(s)</h2></div>
+          <DButton
+          @icon={{if this.isMaximized "compress" "expand"}}
+          @action={{this.toggleMaximize}}
+          class="btn-flat btn-transparent modal-close"
+        />
+         <DButton
+            @icon="copy"
+            @action={{this.copyToClipboard}}
+            class="{{if this.copied 'btncopy' ''}}   btn-flat btn-transparent  modal-close"
+            title="Copy"
+          />
+        </:headerBelowTitle>
+          <:belowHeader></:belowHeader>
+
+
      <:body>
     
      {{#if this.loading}}
@@ -28,6 +49,40 @@
 
     {{/if}}
 
+     <style>
+
+.fullscreen-modal {
+  width: 98vw !important;
+  max-width: 98vw !important;
+  height: 95vh !important;
+
+          --modal-max-width: 98vw !important;
+        --modal-width: 98vw !important;
+        --modal-min-width: 98vw !important;
+}
+
+.modal-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.d-modal__header{
+  justify-content: end!imporant;
+}
+
+.d-modal__header > div:first-child
+
+ {
+    flex: 1;
+}
+
+.btncopy{
+  background-color: green!important;
+}
+
+</style>
+
      </:body>
   <:footer>
     <DButton
@@ -36,5 +91,7 @@
       class="btn-primary"
     />
   </:footer>
+
+ 
  </DModal>
 </template>
