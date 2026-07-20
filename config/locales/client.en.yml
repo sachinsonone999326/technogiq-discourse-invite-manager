@@ -9,12 +9,12 @@ en:
     discourse_plugin_name:
       placeholder: placeholder
     technogiq-discourse-invite-manager:
-      title: "Invite Manager"
+      title: "Create Invites"
     technogiq_invite_manager:
       create: "Create Invite"
-      title: "Invite Manager"
-      manageusers: "Manager Users"
-      manageinvites: "Manager Invites"
+      title: "Create Invites"
+      manageusers: "Manage Users"
+      manageinvites: "Sent Invites"
     Remove: "Remove"
     Add_metadata: "Add metadata"
     View_invites: "View invites"
