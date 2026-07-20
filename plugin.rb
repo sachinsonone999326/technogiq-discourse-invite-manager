@@ -33,6 +33,12 @@ after_initialize do
   User.register_custom_field_type 'admin_metadata', :json
   User.register_custom_field_type 'expiration_date', :string
   require_dependency "invite"
+
+  add_to_serializer(:admin_detailed_user, :expiration_date) do
+    date = UserInviteum.find_by(user_id: object.id)&.expiration_date
+    date.present? ? date.strftime("%d %b %Y") : nil
+  end
+
   #add_admin_route 'invite_manager.title', 'invite-manager'
   #require_dependency "invite_sender"
   class ::Invite
@@ -128,7 +134,11 @@ after_initialize do
       expiration_date: expiration_date,
       calculate_date: calculate_date,
       plan_type: invite_metadata.plan_type,
-      membership_duration_value: invite_metadata.membership_duration_value
+      membership_duration_value: invite_metadata.membership_duration_value,
+      renewal_period: invite_metadata.renewal_period,
+      renewal_period_value: invite_metadata.renewal_period_value,
+      is_batch_mode: invite_metadata.is_batch_mode,
+      batch_id: invite_metadata.batch_id
     )
   end
 
